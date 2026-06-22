@@ -570,7 +570,6 @@ const RequestDetailPage = () => {
                   );
                 }
                 const isSelf = msg.createdBy?.id === user?.id;
-                const deletable = canDeleteComment(msg);
                 return (
                   <Box key={msg.id} sx={{ display: 'flex', justifyContent: isSelf ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 1 }}>
                     {!isSelf && (
@@ -922,13 +921,20 @@ const RequestDetailPage = () => {
 
       {/* Message Actions Menu */}
       <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={closeMessageMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{ sx: { borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.15)' } }}
-      >
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={closeMessageMenu}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: 2,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              },
+            },
+          }}
+        >
         {menuMessage && (
           <>
             <MenuItem
