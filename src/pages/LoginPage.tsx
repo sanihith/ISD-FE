@@ -1,58 +1,32 @@
-import { useState, useEffect } from 'react';
 import { 
   Button, 
   Container, 
   Box, 
   Typography, 
   Stack, 
-  Divider, 
-  Card, 
-  CardContent, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Chip, 
-  CircularProgress,
+  Divider,
   Fade,
-  Paper
+  Paper,
+  Alert
 } from '@mui/material';
-import { 
-  Microsoft as MicrosoftIcon, 
-  Terminal as TerminalIcon 
+import {
+  Microsoft as MicrosoftIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import apiClient from '../api/apiClient';
+import { useSearchParams } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
 
 const LoginPage = () => {
-  const { login, teamsLogin, setToken } = useAuth();
-  const [devMode, setDevMode] = useState(false);
-  const [devUsers, setDevUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (devMode && devUsers.length === 0) {
-      apiClient.get('/auth/dev-users').then(res => setDevUsers(res.data));
-    }
-  }, [devMode]);
-
-  const handleDevLogin = async (userId: number) => {
-    setLoading(true);
-    try {
-      const res = await apiClient.post('/auth/dev-login', { userId });
-      setToken(res.data.token);
-      window.location.href = '/dashboard';
-    } catch (e) {
-      setLoading(false);
-    }
-  };
+  const { login, teamsLogin } = useAuth();
+  const [searchParams] = useSearchParams();
+  const oauthError = searchParams.get('error');
 
   return (
-    <Box 
-      sx={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         backgroundImage: 'url("/login-bg.png")',
         backgroundSize: 'cover',
@@ -69,9 +43,9 @@ const LoginPage = () => {
     >
       <Fade in timeout={1000}>
         <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2 }}>
-          <Paper 
+          <Paper
             elevation={24}
-            sx={{ 
+            sx={{
               p: { xs: 4, md: 6 },
               borderRadius: 4,
               bgcolor: 'rgba(255, 255, 255, 0.95)',
@@ -80,13 +54,13 @@ const LoginPage = () => {
               boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
             }}
           >
-            <Box 
-              component="img" 
-              src={logo} 
-              alt="WorkTrack Logo" 
-              sx={{ height: 60, mb: 3 }} 
+            <Box
+              component="img"
+              src={logo}
+              alt="WorkTrack Logo"
+              sx={{ height: 60, mb: 3 }}
             />
-            
+
             <Typography variant="h4" sx={{ fontWeight: 800, color: 'var(--text-h)' }} gutterBottom>
               WorkTrack
             </Typography>
@@ -94,6 +68,11 @@ const LoginPage = () => {
               The modern standard for task management.
             </Typography>
 
+            {oauthError && (
+              <Alert severity="error" sx={{ mb: 2, textAlign: 'left' }}>
+                Sign in failed. Please try again or contact support if the issue persists.
+              </Alert>
+            )}
             <Stack spacing={2.5}>
               <Button
                 variant="contained"
@@ -101,7 +80,7 @@ const LoginPage = () => {
                 size="large"
                 onClick={teamsLogin}
                 startIcon={<MicrosoftIcon />}
-                sx={{ 
+                sx={{
                   py: 1.5,
                   borderRadius: 2,
                   backgroundColor: '#5B5FC7',
@@ -113,7 +92,7 @@ const LoginPage = () => {
               >
                 Sign in with Teams
               </Button>
-              
+
               <Divider sx={{ my: 1, typography: 'caption', color: 'text.secondary' }}>
                 POWERED BY MICROSOFT 365
               </Divider>
@@ -124,7 +103,7 @@ const LoginPage = () => {
                 size="large"
                 onClick={login}
                 startIcon={<MicrosoftIcon />}
-                sx={{ 
+                sx={{
                   py: 1.5,
                   borderRadius: 2,
                   textTransform: 'none',
@@ -138,72 +117,9 @@ const LoginPage = () => {
               </Button>
             </Stack>
 
-            <Box sx={{ mt: 6 }}>
-              <Button
-                startIcon={<TerminalIcon />}
-                variant="text"
-                size="small"
-                onClick={() => setDevMode(!devMode)}
-                sx={{ 
-                  color: 'text.secondary',
-                  opacity: 0.6,
-                  '&:hover': { opacity: 1 }
-                }}
-              >
-                {devMode ? 'Switch to Production View' : 'Developer Sandbox Mode'}
-              </Button>
-            </Box>
 
-            {devMode && (
-              <Fade in>
-                <Card sx={{ mt: 4, borderRadius: 3, border: '1px solid var(--border)', textAlign: 'left' }}>
-                  <CardContent>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2 }} gutterBottom color="text.secondary">
-                      DEV ACCOUNTS
-                    </Typography>
-                    {loading && <CircularProgress size={20} sx={{ mb: 1 }} />}
-                    <List dense sx={{ maxHeight: 300, overflow: 'auto' }}>
-                      {devUsers.map(user => (
-                        <ListItem
-                          key={user.id}
-                          sx={{ 
-                            borderRadius: 2, 
-                            mb: 1,
-                            bgcolor: 'rgba(0,0,0,0.02)',
-                            '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' }
-                          }}
-                          secondaryAction={
-                            <Button
-                              size="small"
-                              variant="contained"
-                              onClick={() => handleDevLogin(user.id)}
-                              disabled={loading}
-                              sx={{ borderRadius: 2, textTransform: 'none' }}
-                            >
-                              Enter
-                            </Button>
-                          }
-                        >
-                          <ListItemText
-                            primary={user.name}
-                            secondary={user.email}
-                            slotProps={{ primary: { sx: { fontWeight: 600 } } }}
-                          />
-                          <Chip 
-                            label={user.role} 
-                            size="small" 
-                            variant="outlined"
-                            sx={{ mr: 2, fontWeight: 'bold', fontSize: '0.65rem' }} 
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </CardContent>
-                </Card>
-              </Fade>
-            )}
           </Paper>
-          
+
           <Typography variant="caption" sx={{ mt: 4, display: 'block', color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
             © 2026 WorkTrack Inc. Built for performance.
           </Typography>

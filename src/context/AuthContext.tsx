@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   const login = () => {
-    window.location.href = 'http://localhost:8080/api/auth/login';
+    window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
   };
 
   const teamsLogin = async () => {
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     // Fallback: redirect to backend OAuth2
-    window.location.href = 'http://localhost:8080/api/auth/login';
+    window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
   };
 
   const logout = () => {
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (user?.email && token) {
             apiClient.get('/auth/me').catch(() => {
               // Re-authenticate
-              window.location.href = 'http://localhost:8080/api/auth/login';
+              window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
             });
           }
         });
