@@ -42,6 +42,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { getStatusLabel } from '../utils/statusUtils';
 import { getDueDateHeaderStyle, getDueDateSidebarStyle, getDueDateColorStyle } from '../utils/dateUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 
 const RequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,7 +53,9 @@ const RequestDetailPage = () => {
   const { data: requestData, isLoading, error } = useQuery({
     queryKey: ['request', id],
     queryFn: () => apiClient.get(`/requests/${id}`).then(res => res.data),
-    enabled: !!id
+    enabled: !!id,
+    refetchInterval: 5000,
+    refetchOnMount: 'always'
   });
 
   const request = requestData ?? null;
@@ -471,11 +474,11 @@ const RequestDetailPage = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)', flexShrink: 0 }}>
-                    {otherPerson?.name?.charAt(0) || '?'}
+                    {getUserInitial(otherPerson)}
                   </Avatar>
                   <Box sx={{ minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {otherPerson?.name || 'Unassigned'}
+                      {getUserName(otherPerson) || 'Unassigned'}
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.75rem', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {otherPerson
@@ -600,7 +603,7 @@ const RequestDetailPage = () => {
                   <Box key={msg.id} sx={{ display: 'flex', justifyContent: isSelf ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 1 }}>
                     {!isSelf && (
                       <Avatar sx={{ bgcolor: 'var(--accent)', width: 32, height: 32, fontSize: '0.8rem', flexShrink: 0 }}>
-                        {msg.createdBy?.name?.charAt(0)}
+                        {getUserInitial(msg.createdBy)}
                       </Avatar>
                     )}
                     <Box sx={{ maxWidth: '72%' }}>
@@ -633,7 +636,7 @@ const RequestDetailPage = () => {
                         </IconButton>
                         {!isSelf && (
                           <Typography variant="caption" sx={{ fontWeight: 700, color: 'var(--accent)', display: 'block', mb: 0.25, fontSize: '0.75rem' }}>
-                            {msg.createdBy?.name}
+                            {getUserName(msg.createdBy)}
                           </Typography>
                         )}
                         <Typography sx={{ lineHeight: 1.6, whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
@@ -671,7 +674,7 @@ const RequestDetailPage = () => {
                     </Box>
                     {isSelf && (
                       <Avatar sx={{ bgcolor: 'rgba(37,99,235,0.15)', width: 32, height: 32, fontSize: '0.8rem', color: 'var(--accent)', flexShrink: 0, border: '1px solid var(--accent)' }}>
-                        {msg.createdBy?.name?.charAt(0)}
+                        {getUserInitial(msg.createdBy)}
                       </Avatar>
                     )}
                   </Box>
@@ -801,8 +804,8 @@ const RequestDetailPage = () => {
               <CardContent sx={{ p: 2.5 }}>
                 <Stack spacing={2.5}>
                   {[
-                    { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Requested By', value: request.createdBy?.name, avatar: request.createdBy?.name?.[0] },
-                    { icon: <AssignmentIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned To', value: request.assignedTo?.name || 'Unassigned', avatar: request.assignedTo?.name?.[0] || '?' },
+                    { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Requested By', value: getUserName(request.createdBy), avatar: getUserInitial(request.createdBy) },
+                    { icon: <AssignmentIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned To', value: getUserName(request.assignedTo) || 'Unassigned', avatar: getUserInitial(request.assignedTo) },
                     { icon: <CheckCircleIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Status', value: getStatusLabel(request.status), chip: request.status },
                     { icon: <CalendarIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Due Date', value: request.requestedByDate ? dayjs(request.requestedByDate).format('MMM D, YYYY') : 'Not set', date: true }
                   ].map((item, idx) => (
@@ -965,7 +968,7 @@ const RequestDetailPage = () => {
           <>
             <MenuItem
               onClick={() => {
-                setReplyingTo({ id: menuMessage.id, name: menuMessage.createdBy?.name || 'Unknown', content: menuMessage.content });
+                setReplyingTo({ id: menuMessage.id, name: getUserName(menuMessage.createdBy) || 'Unknown', content: menuMessage.content });
                 closeMessageMenu();
               }}
               sx={{ fontSize: '0.85rem', gap: 1, minWidth: 140 }}

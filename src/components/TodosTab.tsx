@@ -26,6 +26,7 @@ import apiClient from '../api/apiClient';
 import DueDateBadge from './DueDateBadge';
 import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 
 const TodosTab = () => {
   const { user } = useAuth();
@@ -299,10 +300,10 @@ const TodosTab = () => {
                   />
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                     <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>
-                      {todo.assignedTo?.name?.[0] || todo.createdBy?.name?.[0] || '?'}
+                      {getUserInitial(todo.assignedTo) !== '?' ? getUserInitial(todo.assignedTo) : getUserInitial(todo.createdBy)}
                     </Avatar>
                     <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.7rem' }}>
-                      {todo.assignedTo?.name || todo.createdBy?.name || 'Unassigned'}
+                      {getUserName(todo.assignedTo) || getUserName(todo.createdBy) || 'Unassigned'}
                     </Typography>
                   </Box>
                 </Box>
@@ -362,8 +363,8 @@ const TodosTab = () => {
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={todo.requestedByDate} /></TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: 'var(--accent)' }}>{todo.createdBy?.name?.[0]}</Avatar>
-                        <Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>{todo.createdBy?.name}</Typography>
+                        <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: 'var(--accent)' }}>{getUserInitial(todo.createdBy)}</Avatar>
+                        <Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>{getUserName(todo.createdBy)}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="right" sx={{ py: 1.5 }}>

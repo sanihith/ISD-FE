@@ -24,6 +24,7 @@ import apiClient from '../api/apiClient';
 import DueDateBadge from './DueDateBadge';
 import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 import dayjs from 'dayjs';
 
 const MyDayTab = () => {
@@ -153,8 +154,8 @@ const MyDayTab = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1.5, borderTop: '1px solid var(--border)' }}>
                   <Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : task.status === 'IN_PROGRESS' ? 'rgba(245,158,11,0.12)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : task.status === 'IN_PROGRESS' ? '#b45309' : 'var(--accent)', border: 'none', '& .MuiChip-label': { px: 1.5 } }} />
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                    <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>{task.assignedTo?.name?.[0] || task.createdBy?.name?.[0] || '?'}</Avatar>
-                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.7rem' }}>{task.assignedTo?.name || task.createdBy?.name || 'Unassigned'}</Typography>
+                    <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>{getUserInitial(task.assignedTo) !== '?' ? getUserInitial(task.assignedTo) : getUserInitial(task.createdBy)}</Avatar>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.7rem' }}>{getUserName(task.assignedTo) || getUserName(task.createdBy) || 'Unassigned'}</Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -180,7 +181,7 @@ const MyDayTab = () => {
                     <TableCell sx={{ py: 1.5 }}><Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.875rem' }}>{task.subject}</Typography></TableCell>
                     <TableCell sx={{ py: 1.5 }}><Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : task.status === 'IN_PROGRESS' ? 'rgba(245,158,11,0.12)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : task.status === 'IN_PROGRESS' ? '#b45309' : 'var(--accent)', border: 'none' }} /></TableCell>
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={task.requestedByDate} /></TableCell>
-                    <TableCell sx={{ py: 1.5 }}><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: 'var(--accent)' }}>{task.createdBy?.name?.[0]}</Avatar><Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>{task.createdBy?.name}</Typography></Box></TableCell>
+                    <TableCell sx={{ py: 1.5 }}><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: 'var(--accent)' }}>{getUserInitial(task.createdBy)}</Avatar><Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>{getUserName(task.createdBy)}</Typography></Box></TableCell>
                     <TableCell align="right" sx={{ py: 1.5 }}><Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleMyDayMutation.mutate(task.id); }} sx={{ color: '#f59e0b' }}><SunIcon sx={{ fontSize: 18 }} /></IconButton><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleImportantMutation.mutate(task.id); }} sx={{ color: task.isImportant ? '#ef4444' : 'text.disabled' }}>{task.isImportant ? <StarIcon sx={{ fontSize: 18 }} /> : <StarOutlineIcon sx={{ fontSize: 18 }} />}</IconButton></Box></TableCell>
                   </TableRow>
                 ))}

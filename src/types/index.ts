@@ -1,8 +1,14 @@
 export interface User {
   id: number;
-  employeeId: string;
-  name: string;
-  email: string;
+  // Aliased fields returned by the backend (see User.getName/getEmail/getEmployeeId)
+  employeeId?: string;
+  name?: string;
+  email?: string;
+  // Raw JPA property names; older deployments of the backend omit the aliased
+  // fields above and expose only these. Optional so we degrade gracefully.
+  employeeName?: string;
+  officialEmail?: string;
+  employeeCode?: string;
   managerId?: number;
   role: string;
 }

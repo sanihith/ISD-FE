@@ -26,6 +26,7 @@ import apiClient from '../api/apiClient';
 import DueDateBadge from './DueDateBadge';
 import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 
 const RequestedByMeTab = () => {
   const { user } = useAuth();
@@ -222,10 +223,10 @@ const RequestedByMeTab = () => {
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>
-                      {req.assignedTo?.name?.[0] || '?'}
+                      {getUserInitial(req.assignedTo)}
                     </Avatar>
                     <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                      {req.assignedTo?.name || 'Unassigned'}
+                      {getUserName(req.assignedTo) || 'Unassigned'}
                     </Typography>
                   </Box>
                 </Box>
@@ -276,10 +277,10 @@ const RequestedByMeTab = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>
-                        {req.assignedTo?.name?.[0] || '?'}
+                        {getUserInitial(req.assignedTo)}
                       </Avatar>
                       <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {req.assignedTo?.name || 'Unassigned'}
+                        {getUserName(req.assignedTo) || 'Unassigned'}
                       </Typography>
                     </Box>
                   </TableCell>

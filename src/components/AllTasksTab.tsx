@@ -22,6 +22,7 @@ import apiClient from '../api/apiClient';
 import DueDateBadge from './DueDateBadge';
 import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 
 type SourceType = 'ALL' | 'REQUESTED' | 'TODO';
 
@@ -59,8 +60,8 @@ const AllTasksTab = () => {
       merged.set(id, {
         ...task,
         _sources: todoMap.has(id) ? ['REQUESTED', 'TODO'] : ['REQUESTED'],
-        _personLabel: task.assignedTo?.name || 'Unassigned',
-        _personInitial: task.assignedTo?.name?.[0] || '?'
+        _personLabel: getUserName(task.assignedTo) || 'Unassigned',
+        _personInitial: getUserInitial(task.assignedTo)
       });
     });
 
@@ -69,8 +70,8 @@ const AllTasksTab = () => {
         merged.set(id, {
           ...task,
           _sources: ['TODO'],
-          _personLabel: task.createdBy?.name || 'Unknown',
-          _personInitial: task.createdBy?.name?.[0] || '?'
+          _personLabel: getUserName(task.createdBy) || 'Unknown',
+          _personInitial: getUserInitial(task.createdBy)
         });
       }
     });

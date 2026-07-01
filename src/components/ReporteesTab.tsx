@@ -28,6 +28,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
 import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
+import { getUserInitial, getUserName } from '../utils/userUtils';
 
 const PerformanceView = ({ userId }: { userId: number }) => {
   const queryClient = useQueryClient();
@@ -231,14 +232,14 @@ const ReporteesTab = () => {
                   fontSize: '1.2rem'
                 }}
               >
-                {emp.name?.[0]}
+                {getUserInitial(emp)}
               </Avatar>
               <Box sx={{ flex: 1 }}>
                 <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 700 }}>
                   Reportee
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--text-h)', lineHeight: 1.2 }}>
-                  {emp.name}
+                  {getUserName(emp)}
                 </Typography>
                 <Chip 
                   label={emp.role || 'USER'} 
