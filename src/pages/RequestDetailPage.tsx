@@ -59,6 +59,13 @@ const RequestDetailPage = () => {
   const canManageRequest = !!request && !!user && (isManager || request.assignedTo?.id === user.id || request.createdBy?.id === user.id);
   const canChangeDueDate = !!request && !!user && (isManager || request.createdBy?.id === user.id);
 
+  // Who are we talking to? Show the other party in the conversation.
+  const otherPerson = !!request && !!user
+    ? (request.createdBy?.id === user.id
+        ? (request.assignedTo ?? null)   // I'm the requester → show assignee
+        : request.createdBy ?? null)      // I'm assignee/manager → show requester
+    : null;
+
   const { data: comments = [], refetch: refetchComments } = useQuery({
     queryKey: ['request-comments', id],
     queryFn: () => apiClient.get(`/requests/${id}/comments`).then(res => res.data),
@@ -372,7 +379,7 @@ const RequestDetailPage = () => {
             </Box>
 
             {canManageRequest && (
-              <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0 }}>
+              <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0, alignItems: 'center' }}>
                 <FormControl size="small" sx={{ minWidth: 140 }}>
                   <Select
                     value={selectedStatus || request.status}
@@ -397,6 +404,37 @@ const RequestDetailPage = () => {
                     <MenuItem value="REJECTED" sx={{ fontSize: '0.85rem' }}>Rejected</MenuItem>
                   </Select>
                 </FormControl>
+
+                {canDeleteAttachment() && (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    startIcon={<DeleteIcon sx={{ fontSize: 16 }} />}
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this entire request?")) {
+                        deleteRequestMutation.mutate();
+                      }
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      px: 2,
+                      py: 0.9,
+                      backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      color: '#ef4444',
+                      // Custom hover properties
+                      '&:hover': {
+                        backgroundColor: '#ef4444',
+                        color: '#fff'
+                      }
+                    }}
+                  >
+                    Delete Request
+                  </Button>
+                )}
               </Stack>
             )}
           </Box>
@@ -423,34 +461,95 @@ const RequestDetailPage = () => {
             <Box sx={{
               background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
               px: 3,
-              py: 2,
+              py: 2.5,
               display: 'flex',
-              alignItems: 'center',
-              gap: 2
+              flexDirection: 'column',
+              gap: 1.5,
+              color: '#fff'
             }}> 
-              <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 42, height: 42, border: '2px solid rgba(255,255,255,0.3)' }}>
-                {request.createdBy?.name?.charAt(0) || '?'}
-              </Avatar>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {/* Header Top Row: Creator Details and Status */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+                  <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)', flexShrink: 0 }}>
+                    {otherPerson?.name?.charAt(0) || '?'}
+                  </Avatar>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {otherPerson?.name || 'Unassigned'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.75rem', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {otherPerson
+                        ? (request.createdBy?.id === user?.id ? 'Assigned to you' : 'Requested by')
+                        : 'No one assigned yet'}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Chip
+                  label={getStatusLabel(request.status)}
+                  size="small"
+                  sx={{
+                    ...getStatusChipStyle(request.status),
+                    fontWeight: 700,
+                    fontSize: '0.65rem',
+                    borderRadius: 1.5,
+                    px: 0.5,
+                    flexShrink: 0
+                  }}
+                />
+              </Box>
+
+              {/* Subject and Description Container */}
+              <Box sx={{
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: 2.5,
+                p: 2,
+                backdropFilter: 'blur(5px)'
+              }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#fff', mb: 1, fontSize: '1rem', lineHeight: 1.3 }}>
                   {request.subject}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}>
-                  {request.createdBy?.name}
-                  {request.assignedTo ? ` → ${request.assignedTo.name}` : ' → Unassigned'}
+                <Typography sx={{
+                  fontSize: '0.85rem',
+                  color: 'rgba(255, 255, 255, 0.88)',
+                  lineHeight: 1.5,
+                  whiteSpace: 'pre-wrap',
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  pr: 1,
+                  '&::-webkit-scrollbar': { width: '4px' },
+                  '&::-webkit-scrollbar-track': { background: 'transparent' },
+                  '&::-webkit-scrollbar-thumb': { background: 'rgba(255, 255, 255, 0.25)', borderRadius: '4px' }
+                }}>
+                  {request.explanation || 'No description provided.'}
                 </Typography>
+
+                {request.attachments?.length > 0 && (
+                  <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {request.attachments.map((att: any) => (
+                      <Button
+                        key={att.id}
+                        size="small"
+                        variant="outlined"
+                        startIcon={<AttachFile sx={{ fontSize: 13 }} />}
+                        onClick={() => downloadAttachment(att.id, att.fileName)}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontSize: '0.7rem',
+                          py: 0.25,
+                          px: 1,
+                          borderColor: 'rgba(255, 255, 255, 0.3)',
+                          color: '#fff',
+                          '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255, 255, 255, 0.1)' }
+                        }}
+                      >
+                        {att.fileName.length > 20 ? att.fileName.slice(0, 20) + '...' : att.fileName}
+                      </Button>
+                    ))}
+                  </Box>
+                )}
               </Box>
-              <Chip
-                label={getStatusLabel(request.status)}
-                size="small"
-                sx={{
-                  ...getStatusChipStyle(request.status),
-                  fontWeight: 700,
-                  fontSize: '0.65rem',
-                  borderRadius: 1.5,
-                  '& .MuiChip-label': { px: 1 }
-                }}
-              />
             </Box>
 
             {/* Messages Area */}
@@ -469,86 +568,13 @@ const RequestDetailPage = () => {
                 backgroundSize: '18px 18px'
               }}
             >
-              {/* Initial Request */}
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', gap: 1 }}>
-                <Avatar sx={{ bgcolor: 'var(--accent)', width: 32, height: 32, fontSize: '0.8rem', flexShrink: 0 }}>
-                  {request.createdBy?.name?.charAt(0)}
-                </Avatar>
-                <Box sx={{ maxWidth: '72%' }}>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      bgcolor: '#fff',
-                      borderRadius: '0 16px 16px 16px',
-                      p: 2,
-                      pr: '28px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(0,0,0,0.05)'
-                    }}
-                  >
-                    <IconButton
-                      size="small"
-                      onClick={(e) =>
-                        openMessageMenu(e, {
-                          id: -request.id,
-                          createdBy: request.createdBy,
-                          content: request.explanation || 'No description provided.',
-                          type: 'USER'
-                        })
-                      }
-                      sx={{
-                        position: 'absolute',
-                        top: 4,
-                        right: 4,
-                        p: 0.25,
-                        opacity: 0.5,
-                        color: 'var(--text-muted)',
-                        '&:hover': { opacity: 1, bgcolor: 'var(--accent-bg)' }
-                      }}
-                    >
-                      <MoreVertIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                    <Typography variant="caption" sx={{ fontWeight: 700, color: 'var(--accent)', display: 'block', mb: 0.5 }}>
-                      {request.createdBy?.name}
-                    </Typography>
-                    <Typography sx={{ lineHeight: 1.6, whiteSpace: 'pre-wrap', fontSize: '0.9rem', color: 'var(--text-h)' }}>
-                      {request.explanation || 'No description provided.'}
-                    </Typography>
-                    {request.attachments?.length > 0 && (
-                      <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-                        {request.attachments.map((att: any) => (
-                          <Box key={att.id} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              startIcon={<AttachFile sx={{ fontSize: 14 }} />}
-                              onClick={() => downloadAttachment(att.id, att.fileName)}
-                              fullWidth
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: 'none',
-                                fontSize: '0.75rem',
-                                justifyContent: 'flex-start',
-                                borderColor: 'var(--border)',
-                                color: 'var(--accent)',
-                                '&:hover': { borderColor: 'var(--accent)', bgcolor: 'var(--accent-bg)' }
-                              }}
-                            >
-                              {att.fileName}
-                            </Button>
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
-                    <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.75, color: 'var(--text-muted)', fontSize: '0.7rem' }}>
-                      {dayjs(request.createdAt).format('h:mm A')}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
 
               {/* Comments */}
-              {comments.filter((msg: any) => msg.type !== 'SYSTEM' || (now - new Date(msg.createdAt).getTime()) < 120000).map((msg: any) => {
+              {comments.filter((msg: any) => {
+                if (msg.type === 'INITIAL') return false; // shown in chat header instead
+                if (msg.type === 'SYSTEM') return (now - new Date(msg.createdAt).getTime()) < 120000;
+                return true;
+              }).map((msg: any) => {
                 if (msg.type === 'SYSTEM') {
                   return (
                     <Box key={msg.id} sx={{ py: 1.5, textAlign: 'center', position: 'relative' }}>
