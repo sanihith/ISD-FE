@@ -7,9 +7,19 @@ import RequestDetailPage from './pages/RequestDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ReporteesPage from './pages/ReporteesPage';
 import type { ReactNode } from 'react';
+import { Box, CircularProgress } from '@mui/material';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 

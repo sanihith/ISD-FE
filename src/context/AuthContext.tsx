@@ -12,6 +12,7 @@ interface AuthContextType {
   teamsLogin: () => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
   isManager: boolean;
   isAdmin: boolean;
 }
@@ -22,6 +23,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const [token, setTokenState] = useState<string | null>(() => localStorage.getItem('jwt_token'));
   const [user, setUser] = useState<any>(null);
+  // Start loading if there's a token to validate; otherwise we know auth state immediately
+  const [isLoading, setIsLoading] = useState<boolean>(() => !!localStorage.getItem('jwt_token'));
 
   const setToken = (value: string | null) => {
     if (value) {
@@ -34,9 +37,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (token) {
-      apiClient.get('/auth/me').then(res => setUser(res.data)).catch(() => logout());
+      setIsLoading(true);
+      apiClient.get('/auth/me')
+        .then(res => {
+          setUser(res.data);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          // Token is invalid/expired — clear it and redirect to login
+          localStorage.removeItem('jwt_token');
+          setTokenState(null);
+          setUser(null);
+          setIsLoading(false);
+        });
     } else {
       setUser(null);
+      setIsLoading(false);
     }
   }, [token]);
 
@@ -96,8 +112,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isManager = ['MANAGER', 'DIRECTOR', 'ADMIN', 'ROLE_MANAGER', 'ROLE_DIRECTOR', 'ROLE_ADMIN'].includes(normalizedRole);
   const isAdmin = normalizedRole === 'ADMIN' || normalizedRole === 'ROLE_ADMIN';
 
+  // Only consider authenticated if we have BOTH a token AND a validated user
+  const isAuthenticated = !!token && !!user;
+
   return (
-    <AuthContext.Provider value={{ user, token, setToken, login, teamsLogin, logout, isAuthenticated: !!token, isManager, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, setToken, login, teamsLogin, logout, isAuthenticated, isLoading, isManager, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
