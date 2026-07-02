@@ -747,7 +747,7 @@ const RequestDetailPage = () => {
                 size="small"
                 placeholder="Type a message..."
                 multiline
-                maxRows={8}
+                maxRows={4}
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={(e) => {
@@ -761,7 +761,6 @@ const RequestDetailPage = () => {
                     borderRadius: 3,
                     bgcolor: 'var(--bg)',
                     fontSize: '0.9rem',
-                    minHeight: '100px',
                     '& fieldset': { borderColor: 'var(--border)' },
                     '&:hover fieldset': { borderColor: 'var(--accent)' },
                     '&.Mui-focused fieldset': { borderColor: 'var(--accent)' }
