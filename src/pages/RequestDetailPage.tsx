@@ -151,12 +151,37 @@ const RequestDetailPage = () => {
   const commentMutation = useMutation({
     mutationFn: (content: string) =>
       apiClient.post(`/requests/${id}/comments`, { content }),
-    onSuccess: () => {
-      setCommentText('');
-      setReplyingTo(null);
-      setCommentText('');
-      setReplyingTo(null);
-      refetchComments();
+    onMutate: async (newContent) => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['request-comments', id] });
+
+      // Snapshot the previous comments
+      const previousComments = queryClient.getQueryData(['request-comments', id]);
+
+      // Optimistically add the new comment
+      const optimisticComment = {
+        id: Date.now(), // temporary ID
+        content: newContent,
+        createdAt: new Date().toISOString(),
+        createdBy: user,
+        type: 'USER',
+        attachments: []
+      };
+
+      queryClient.setQueryData(['request-comments', id], (old: any[]) => [...(old || []), optimisticComment]);
+
+      return { previousComments };
+    },
+    onError: (err, _newContent, context) => {
+      // Rollback on error
+      if (context?.previousComments) {
+        queryClient.setQueryData(['request-comments', id], context.previousComments);
+      }
+      console.error('Failed to send message:', err);
+    },
+    onSettled: () => {
+      // Refetch to sync with server (gets real IDs, timestamps, etc.)
+      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
     }
   });
 
@@ -231,6 +256,7 @@ const RequestDetailPage = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
+      // Invalidate request data (for attachment counts, etc.) but comments are handled by onSettled
       queryClient.invalidateQueries({ queryKey: ['request', id] });
     } catch (err) {
       console.error("Failed to send message:", err);
