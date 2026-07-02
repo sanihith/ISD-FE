@@ -17,7 +17,7 @@ const DashboardPage = () => {
 
   const tabs = [
     { label: 'Todos', component: <TodosTab /> },
-    { label: 'Requested By Me', component: <RequestedByMeTab /> },
+    { label: 'Tasks Assigned', component: <RequestedByMeTab /> },
     { label: 'All Tasks', component: <AllTasksTab /> },
     { label: 'My Day', component: <MyDayTab /> },
     { label: 'Important', component: <ImportantTab /> },
