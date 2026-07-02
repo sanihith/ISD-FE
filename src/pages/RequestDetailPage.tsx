@@ -152,8 +152,6 @@ const RequestDetailPage = () => {
     mutationFn: (content: string) =>
       apiClient.post(`/requests/${id}/comments`, { content }),
     onSuccess: () => {
-      setCommentText('');
-      setReplyingTo(null);
       refetchComments();
     }
   });
@@ -206,25 +204,29 @@ const RequestDetailPage = () => {
 
   const handleSendMessage = async () => {
     if (!commentText.trim() && !selectedFile) return;
+    const content = commentText.trim() || (selectedFile ? `Shared an attachment: ${selectedFile.name}` : "");
+    const currentFile = selectedFile;
+    // Clear input immediately so the user sees instant feedback
+    setCommentText('');
+    setSelectedFile(null);
+    setReplyingTo(null);
     try {
       setIsUploading(true);
-      let content = commentText.trim() || (selectedFile ? `Shared an attachment: ${selectedFile.name}` : "");
+      let finalContent = content;
       if (replyingTo) {
         const replySnippet = replyingTo.content.length > 40 ? replyingTo.content.slice(0, 40) + '...' : replyingTo.content;
-        content = `> Replying to ${replyingTo.name}: "${replySnippet}"\n\n${content}`;
+        finalContent = `> Replying to ${replyingTo.name}: "${replySnippet}"\n\n${content}`;
       }
-      const commentRes = await commentMutation.mutateAsync(content);
-      if (selectedFile && commentRes.data?.id) {
+      const commentRes = await commentMutation.mutateAsync(finalContent);
+      if (currentFile && commentRes.data?.id) {
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('file', currentFile);
         formData.append('requestId', id!);
         formData.append('commentId', commentRes.data.id.toString());
         await apiClient.post('/attachments/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
-      setCommentText('');
-      setSelectedFile(null);
       queryClient.invalidateQueries({ queryKey: ['request', id] });
     } catch (err) {
       console.error("Failed to send message:", err);

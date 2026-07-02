@@ -125,7 +125,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 display: 'flex'
               }}
             >
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>New Request</Box>
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>New Task</Box>
               <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>+</Box>
             </Button>
 
