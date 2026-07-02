@@ -69,11 +69,11 @@ const RequestDetailPage = () => {
       : request.createdBy ?? null)      // I'm assignee/manager → show requester
     : null;
 
-  const { data: comments = [], refetch: refetchComments } = useQuery({
+  const { data: comments = [] } = useQuery({
     queryKey: ['request-comments', id],
     queryFn: () => apiClient.get(`/requests/${id}/comments`).then(res => res.data),
-    enabled: !!id,
-    refetchInterval: 3000
+    enabled: !!id
+    // refetchInterval removed - using invalidation on mutations instead
   });
 
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -188,13 +188,24 @@ const RequestDetailPage = () => {
   const deleteCommentsMutation = useMutation({
     mutationFn: (ids: number[]) =>
       apiClient.delete(`/requests/${id}/comments`, { data: { ids } }),
-    onSuccess: () => {
-      refetchComments();
-      setReplyingTo(null);
+    onMutate: async (idsToDelete) => {
+      await queryClient.cancelQueries({ queryKey: ['request-comments', id] });
+      const previousComments = queryClient.getQueryData(['request-comments', id]);
+      queryClient.setQueryData(['request-comments', id], (old: any[]) =>
+        (old || []).filter(comment => !idsToDelete.includes(comment.id))
+      );
+      return { previousComments };
     },
-    onError: (err: any) => {
+    onError: (err, _ids, context) => {
+      if (context?.previousComments) {
+        queryClient.setQueryData(['request-comments', id], context.previousComments);
+      }
       console.error('Delete failed:', err);
       alert('Failed to delete message. Please try again.');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
+      setReplyingTo(null);
     }
   });
 
