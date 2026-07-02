@@ -530,18 +530,46 @@ const RequestDetailPage = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Chip
-                  label={getStatusLabel(request.status)}
-                  size="small"
-                  sx={{
-                    ...getStatusChipStyle(request.status),
-                    fontWeight: 700,
-                    fontSize: '0.65rem',
-                    borderRadius: 1.5,
-                    px: 0.5,
-                    flexShrink: 0
-                  }}
-                />
+                {canManageRequest ? (
+                  <FormControl size="small" sx={{ minWidth: 130 }}>
+                    <Select
+                      value={selectedStatus || request.status}
+                      onChange={(e) => handleStatusChange(e.target.value)}
+                      displayEmpty
+                      sx={{
+                        borderRadius: 2,
+                        bgcolor: 'rgba(255,255,255,0.15)',
+                        color: '#fff',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
+                        '& .MuiSvgIcon-root': { color: '#fff' },
+                        '& .MuiSelect-select': { py: 0.75 },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' }
+                      }}
+                      renderValue={(val) => <span>{getStatusLabel(val)}</span>}
+                    >
+                      <MenuItem value="OPEN" sx={{ fontSize: '0.85rem' }}>Todo</MenuItem>
+                      <MenuItem value="IN_PROGRESS" sx={{ fontSize: '0.85rem' }}>In Progress</MenuItem>
+                      <MenuItem value="COMPLETED" sx={{ fontSize: '0.85rem' }}>Completed</MenuItem>
+                      <MenuItem value="REJECTED" sx={{ fontSize: '0.85rem' }}>Rejected</MenuItem>
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <Chip
+                    label={getStatusLabel(request.status)}
+                    size="small"
+                    sx={{
+                      ...getStatusChipStyle(request.status),
+                      fontWeight: 700,
+                      fontSize: '0.65rem',
+                      borderRadius: 1.5,
+                      px: 0.5,
+                      flexShrink: 0
+                    }}
+                  />
+                )}
               </Box>
 
               {/* Subject and Description Container */}
