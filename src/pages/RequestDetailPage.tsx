@@ -65,8 +65,8 @@ const RequestDetailPage = () => {
   // Who are we talking to? Show the other party in the conversation.
   const otherPerson = !!request && !!user
     ? (request.createdBy?.id === user.id
-        ? (request.assignedTo ?? null)   // I'm the requester → show assignee
-        : request.createdBy ?? null)      // I'm assignee/manager → show requester
+      ? (request.assignedTo ?? null)   // I'm the requester → show assignee
+      : request.createdBy ?? null)      // I'm assignee/manager → show requester
     : null;
 
   const { data: comments = [], refetch: refetchComments } = useQuery({
@@ -152,6 +152,10 @@ const RequestDetailPage = () => {
     mutationFn: (content: string) =>
       apiClient.post(`/requests/${id}/comments`, { content }),
     onSuccess: () => {
+      setCommentText('');
+      setReplyingTo(null);
+      setCommentText('');
+      setReplyingTo(null);
       refetchComments();
     }
   });
@@ -458,8 +462,8 @@ const RequestDetailPage = () => {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            height: 'calc(100vh - 220px)',
-            minHeight: 520,
+            height: 'calc(100vh - 160px)',
+            minHeight: 700,
             border: '1px solid var(--border)'
           }}>
             {/* Chat Header */}
@@ -471,7 +475,7 @@ const RequestDetailPage = () => {
               flexDirection: 'column',
               gap: 1.5,
               color: '#fff'
-            }}> 
+            }}>
               {/* Header Top Row: Creator Details and Status */}
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
@@ -743,7 +747,7 @@ const RequestDetailPage = () => {
                 size="small"
                 placeholder="Type a message..."
                 multiline
-                maxRows={4}
+                maxRows={8}
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={(e) => {
@@ -757,6 +761,7 @@ const RequestDetailPage = () => {
                     borderRadius: 3,
                     bgcolor: 'var(--bg)',
                     fontSize: '0.9rem',
+                    minHeight: '100px',
                     '& fieldset': { borderColor: 'var(--border)' },
                     '&:hover fieldset': { borderColor: 'var(--accent)' },
                     '&.Mui-focused fieldset': { borderColor: 'var(--accent)' }
@@ -952,20 +957,20 @@ const RequestDetailPage = () => {
 
       {/* Message Actions Menu */}
       <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={closeMessageMenu}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          slotProps={{
-            paper: {
-              sx: {
-                borderRadius: 2,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              },
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={closeMessageMenu}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 2,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
             },
-          }}
-        >
+          },
+        }}
+      >
         {menuMessage && (
           <>
             <MenuItem
