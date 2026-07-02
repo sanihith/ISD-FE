@@ -16,7 +16,8 @@ const NotificationCenter = () => {
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ['unread-count', user?.id],
     queryFn: () => apiClient.get('/notifications/unread-count').then(res => res.data),
-    refetchInterval: 5000,
+    refetchInterval: 30000, // 30 seconds instead of 5 seconds
+    staleTime: 15000, // Consider data fresh for 15 seconds
     enabled: !!user
   });
 

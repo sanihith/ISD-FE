@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import apiClient from '../api/apiClient';
@@ -19,61 +19,89 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const USER_CACHE_KEY = 'worktrack_user_cache';
+const USER_CACHE_TTL = 1000 * 60 * 10; // 10 minutes
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const [token, setTokenState] = useState<string | null>(() => localStorage.getItem('jwt_token'));
   const [user, setUser] = useState<any>(null);
-  // Start loading if there's a token to validate; otherwise we know auth state immediately
   const [isLoading, setIsLoading] = useState<boolean>(() => !!localStorage.getItem('jwt_token'));
 
-  const setToken = (value: string | null) => {
+  const setToken = useCallback((value: string | null) => {
     if (value) {
       localStorage.setItem('jwt_token', value);
     } else {
       localStorage.removeItem('jwt_token');
+      localStorage.removeItem(USER_CACHE_KEY);
     }
     setTokenState(value);
-  };
+  }, []);
+
+  // Load cached user immediately to avoid flash
+  useEffect(() => {
+    const cached = localStorage.getItem(USER_CACHE_KEY);
+    if (cached) {
+      try {
+        const { user: cachedUser, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USER_CACHE_TTL) {
+          setUser(cachedUser);
+        }
+      } catch {
+        // Ignore cache parse errors
+      }
+    }
+  }, []);
+
+  const validateToken = useCallback(async () => {
+    try {
+      const res = await apiClient.get('/auth/me');
+      const userData = res.data;
+      setUser(userData);
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify({
+        user: userData,
+        timestamp: Date.now()
+      }));
+      return userData;
+    } catch {
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem(USER_CACHE_KEY);
+      setTokenState(null);
+      setUser(null);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
+    let mounted = true;
     if (token) {
       setIsLoading(true);
-      apiClient.get('/auth/me')
-        .then(res => {
-          setUser(res.data);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          // Token is invalid/expired — clear it and redirect to login
-          localStorage.removeItem('jwt_token');
-          setTokenState(null);
-          setUser(null);
-          setIsLoading(false);
-        });
+      validateToken().finally(() => {
+        if (mounted) setIsLoading(false);
+      });
     } else {
       setUser(null);
       setIsLoading(false);
     }
-  }, [token]);
+    return () => { mounted = false; };
+  }, [token, validateToken]);
 
-  const login = () => {
+  const login = useCallback(() => {
     window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
-  };
+  }, []);
 
-  const teamsLogin = async () => {
-    // If in Teams, use Teams SSO
+  const teamsLogin = useCallback(async () => {
     const inTeams = await initTeams();
     if (inTeams) {
       try {
         const user = await getTeamsUser();
         if (user?.email) {
-          // Get JWT from backend using Teams identity
           const res = await apiClient.post('/auth/teams-token', {
             email: user.email,
             displayName: user.displayName,
           });
-          const { token } = res.data;
-          setToken(token);
+          const { token: newToken } = res.data;
+          setToken(newToken);
           window.location.href = '/dashboard';
           return;
         }
@@ -81,25 +109,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Fall through to redirect login
       }
     }
-    // Fallback: redirect to backend OAuth2
     window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
-  };
+  }, [setToken]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     queryClient.clear();
     window.location.href = '/login';
-  };
+  }, [setToken, queryClient]);
 
   useEffect(() => {
-    // Also init teams on mount for silent SSO
     initTeams().then(inTeams => {
       if (inTeams) {
         getTeamsUser().then(user => {
           if (user?.email && token) {
             apiClient.get('/auth/me').catch(() => {
-              // Re-authenticate
               window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
             });
           }
@@ -112,7 +137,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isManager = ['MANAGER', 'DIRECTOR', 'ADMIN', 'ROLE_MANAGER', 'ROLE_DIRECTOR', 'ROLE_ADMIN'].includes(normalizedRole);
   const isAdmin = normalizedRole === 'ADMIN' || normalizedRole === 'ROLE_ADMIN';
 
-  // Only consider authenticated if we have BOTH a token AND a validated user
   const isAuthenticated = !!token && !!user;
 
   return (
