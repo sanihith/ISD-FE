@@ -133,6 +133,7 @@ const RequestDetailPage = () => {
       queryClient.setQueryData(['request', id], updatedRequest);
       await queryClient.invalidateQueries({ queryKey: ['request', id], refetchType: 'active' });
       await queryClient.refetchQueries({ queryKey: ['request', id] });
+      await queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
     }
   });
 
