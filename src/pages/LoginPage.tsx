@@ -42,11 +42,11 @@ const LoginPage = () => {
       }}
     >
       <Fade in timeout={1000}>
-        <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2 }}>
+        <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2, px: { xs: 2, sm: 3 } }}>
           <Paper
             elevation={24}
             sx={{
-              p: { xs: 4, md: 6 },
+              p: { xs: 3, sm: 4, md: 6 },
               borderRadius: 4,
               bgcolor: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)',
@@ -61,10 +61,10 @@ const LoginPage = () => {
               sx={{ height: 60, mb: 3 }}
             />
 
-            <Typography variant="h4" sx={{ fontWeight: 800, color: 'var(--text-h)' }} gutterBottom>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: 'var(--text-h)', fontSize: { xs: '1.8rem', sm: '2.125rem' } }} gutterBottom>
               WorkTrack
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 6 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 4, sm: 6 }, px: { xs: 1, sm: 0 } }}>
               The modern standard for task management.
             </Typography>
 

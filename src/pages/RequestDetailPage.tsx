@@ -83,12 +83,22 @@ const RequestDetailPage = () => {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [menuMessage, setMenuMessage] = useState<any>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: number; name: string; content: string } | null>(null);
+  const [localSystemMessages, setLocalSystemMessages] = useState<any[]>([]);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 10000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setLocalSystemMessages((messages) =>
+      messages.filter((msg) => (now - new Date(msg.createdAt).getTime()) < 120000)
+    );
+  }, [now]);
+
+  const displayComments = [...comments, ...localSystemMessages]
+    .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -123,17 +133,34 @@ const RequestDetailPage = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [comments]);
+  }, [displayComments]);
 
   const updateMutation = useMutation({
     mutationFn: (newStatus: string) =>
       apiClient.put(`/requests/${id}`, { status: newStatus }),
-    onSuccess: async (response) => {
+    onMutate: async (newStatus: string) => {
+      const oldStatus = request?.status ?? 'OPEN';
+      const tempMessage = {
+        id: -Date.now(),
+        content: `Status changed from ${getStatusLabel(oldStatus)} to ${getStatusLabel(newStatus)}`,
+        createdAt: new Date().toISOString(),
+        type: 'SYSTEM'
+      };
+      setLocalSystemMessages((prev) => [...prev, tempMessage]);
+      return { tempMessageId: tempMessage.id };
+    },
+    onSuccess: async (response, _newStatus, context) => {
       const updatedRequest = response.data;
       queryClient.setQueryData(['request', id], updatedRequest);
+      setLocalSystemMessages((prev) => prev.filter((msg) => msg.id !== context?.tempMessageId));
       await queryClient.invalidateQueries({ queryKey: ['request', id], refetchType: 'active' });
       await queryClient.refetchQueries({ queryKey: ['request', id] });
       await queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
+    },
+    onError: (_err, _newStatus, context) => {
+      if (context?.tempMessageId) {
+        setLocalSystemMessages((prev) => prev.filter((msg) => msg.id !== context.tempMessageId));
+      }
     }
   });
 
@@ -500,8 +527,8 @@ const RequestDetailPage = () => {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            height: 'calc(100vh - 160px)',
-            minHeight: 700,
+            height: { xs: 'auto', md: 'calc(100vh - 160px)' },
+            minHeight: { xs: 'auto', md: 700 },
             border: '1px solid var(--border)'
           }}>
             {/* Chat Header */}
@@ -515,12 +542,12 @@ const RequestDetailPage = () => {
               color: '#fff'
             }}>
               {/* Header Top Row: Creator Details and Status */}
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)', flexShrink: 0 }}>
                     {getUserInitial(otherPerson)}
                   </Avatar>
-                  <Box sx={{ minWidth: 0 }}>
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {getUserName(otherPerson) || 'Unassigned'}
                     </Typography>
@@ -532,7 +559,7 @@ const RequestDetailPage = () => {
                   </Box>
                 </Box>
                 {canManageRequest ? (
-                  <FormControl size="small" sx={{ minWidth: 130 }}>
+                  <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 130 }, width: { xs: '100%', sm: 'auto' } }}>
                     <Select
                       value={selectedStatus || request.status}
                       onChange={(e) => handleStatusChange(e.target.value)}
@@ -645,7 +672,7 @@ const RequestDetailPage = () => {
             >
 
               {/* Comments */}
-              {comments.filter((msg: any) => {
+              {displayComments.filter((msg: any) => {
                 if (msg.type === 'INITIAL') return false; // shown in chat header instead
                 if (msg.type === 'SYSTEM') return (now - new Date(msg.createdAt).getTime()) < 120000;
                 return true;
@@ -678,7 +705,7 @@ const RequestDetailPage = () => {
                         {getUserInitial(msg.createdBy)}
                       </Avatar>
                     )}
-                    <Box sx={{ maxWidth: '72%' }}>
+                    <Box sx={{ maxWidth: { xs: '100%', sm: '72%' } }}>
                       <Box
                         sx={{
                           position: 'relative',
@@ -779,7 +806,8 @@ const RequestDetailPage = () => {
               bgcolor: '#fff',
               display: 'flex',
               gap: 1.5,
-              alignItems: 'flex-end'
+              alignItems: 'flex-end',
+              flexDirection: { xs: 'column', sm: 'row' }
             }}>
               <IconButton
                 size="small"
@@ -789,7 +817,8 @@ const RequestDetailPage = () => {
                   color: 'var(--text-muted)',
                   bgcolor: 'var(--accent-bg)',
                   '&:hover': { bgcolor: 'var(--accent)', color: '#fff' },
-                  flexShrink: 0
+                  flexShrink: 0,
+                  width: { xs: '100%', sm: 'auto' }
                 }}
               >
                 <AttachFile fontSize="small" />

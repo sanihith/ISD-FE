@@ -236,7 +236,8 @@ const RequestedByMeTab = () => {
         </Box>
       ) : (
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 'var(--shadow)', border: '1px solid var(--border)', bgcolor: 'background.paper', overflow: 'hidden' }}>
-          <Table sx={{ minWidth: 650 }}>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow sx={{ bgcolor: 'var(--accent-bg)' }}>
                 <TableCell sx={{ fontWeight: 800 }}>Task</TableCell>
@@ -312,6 +313,7 @@ const RequestedByMeTab = () => {
               ))}
             </TableBody>
           </Table>
+          </Box>
         </TableContainer>
       )}
     </Box>

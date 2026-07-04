@@ -28,9 +28,9 @@ const AuthCallbackPage = () => {
   }, [searchParams, logout, navigate, setToken]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', px: 3, textAlign: 'center' }}>
       <CircularProgress />
-      <Typography sx={{ mt: 2 }}>Completing sign in...</Typography>
+      <Typography sx={{ mt: 2, fontSize: { xs: '0.95rem', sm: '1rem' } }}>Completing sign in...</Typography>
     </Box>
   );
 };

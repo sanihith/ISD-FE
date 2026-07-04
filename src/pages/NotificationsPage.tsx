@@ -109,10 +109,10 @@ const NotificationsPage = () => {
 
   return (
     <DashboardLayout>
-      <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+      <Box sx={{ maxWidth: 800, mx: 'auto', p: { xs: 2, md: 3 } }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, mb: 3, gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
             <IconButton onClick={() => navigate('/dashboard')}>
               <ArrowBack />
             </IconButton>
@@ -128,13 +128,13 @@ const NotificationsPage = () => {
               />
             )}
           </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', width: '100%', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
             {unreadCount > 0 && (
               <Button 
                 variant="outlined" 
                 size="small"
                 onClick={() => markAllRead.mutate()}
-                sx={{ borderRadius: 2, textTransform: 'none' }}
+                sx={{ borderRadius: 2, textTransform: 'none', width: { xs: '100%', sm: 'auto' } }}
               >
                 Mark all as read
               </Button>
@@ -158,7 +158,7 @@ const NotificationsPage = () => {
         </Box>
 
         {/* Filter Tabs */}
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
           <Chip 
             label={`All (${notifications.length})`}
             onClick={() => setFilter('all')}

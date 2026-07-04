@@ -140,19 +140,19 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
         </IconButton>
       </Box>
 
-      <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', height: '70vh' }}>
+      <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: '70vh' } }}>
         <Box sx={{ px: 3, py: 1 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'row', py: 1, alignItems: 'center', gap: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ width: 60 }}>From:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', py: 1, alignItems: 'flex-start', gap: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ width: { xs: '100%', sm: 60 } }}>From:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
               <PersonIcon sx={{ fontSize: 16, color: 'primary.main' }} />
               <Typography variant="body2" sx={{ fontWeight: '500' }}>{user?.email}</Typography>
             </Box>
           </Box>
           <Divider />
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', py: 1, alignItems: 'center', gap: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ width: 60 }}>To:</Typography>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, py: 1, alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ width: { xs: '100%', md: 60 } }}>To:</Typography>
             <TextField
               variant="standard"
               fullWidth
@@ -169,9 +169,9 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
           </Box>
           <Divider />
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', py: 1, alignItems: 'center', gap: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ width: 60 }}>Cc:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', flex: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, py: 1, alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ width: { xs: '100%', md: 60 } }}>Cc:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', flex: 1, width: '100%' }}>
               <TextField
                 variant="standard"
                 fullWidth
@@ -207,7 +207,7 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
           </Box>
           <Divider />
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', py: 1, alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, py: 1, alignItems: { xs: 'flex-start', md: 'center' }, gap: 2, width: '100%' }}>
             <Box sx={{
               flex: 1,
               p: 1,
@@ -218,7 +218,8 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
               alignItems: 'center',
               gap: 1,
               bgcolor: 'var(--accent-bg)',
-              color: 'var(--text-h)'
+              color: 'var(--text-h)',
+              width: '100%'
             }}>
               <DateRangeIcon sx={{ fontSize: 20, opacity: 0.8 }} />
               <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -245,12 +246,13 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
               </Box>
             </Box>
 
-            <FormControl size="small" sx={{ minWidth: 120 }}>
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 120 }, width: { xs: '100%', md: 'auto' } }}>
               <InputLabel>Status</InputLabel>
               <Select
                 value={formData.status}
                 label="Status"
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                sx={{ width: '100%' }}
               >
                 {STATUS_OPTIONS.map(opt => (
                   <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>

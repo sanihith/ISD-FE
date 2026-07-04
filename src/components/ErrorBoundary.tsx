@@ -32,11 +32,11 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
       return (
-        <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Box sx={{ p: { xs: 3, sm: 4 }, textAlign: 'center', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Typography variant="h5" color="error" gutterBottom>
             Something went wrong
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 480 }}>
             {this.state.error?.message || 'An unexpected error occurred'}
           </Typography>
           <Button variant="contained" onClick={this.handleReset}>

@@ -45,8 +45,8 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           zIndex: (theme) => theme.zIndex.drawer + 1
         }}
       >
-        <Toolbar sx={{ px: { xs: 2, md: 4 }, height: 72 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 5 }}>
+        <Toolbar sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 0 }, flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'flex-start', md: 'center' }, gap: { xs: 2, md: 0 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', flexWrap: 'wrap' }}>
             <Box
               component="img"
               src={logo}
@@ -66,7 +66,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             </Box>
           </Box>
 
-          <Box sx={{ flexGrow: 1, height: '100%', display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'center' } }}>
             {tabs && onTabChange !== undefined && activeTab !== undefined && (
               <Tabs
                 value={activeTab}
@@ -74,7 +74,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 variant="scrollable"
                 scrollButtons={false}
                 sx={{
-                  height: 72,
+                  width: '100%',
                   '& .MuiTabs-indicator': {
                     height: 3,
                     borderRadius: '3px 3px 0 0',
@@ -85,10 +85,10 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                     fontWeight: 600,
                     fontSize: '0.8rem',
                     minWidth: 'auto',
-                    px: 2.5,
-                    height: 72,
+                    px: 2,
+                    height: 56,
                     flexShrink: 0,
-                    color: 'rgba(255,255,255,0.65)',
+                    color: 'rgba(255,255,255,0.75)',
                     '&.Mui-selected': { color: '#fff' },
                     '&:hover': { color: '#fff', background: 'rgba(255,255,255,0.08)' }
                   }
@@ -101,7 +101,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', flexWrap: 'wrap', justifyContent: { xs: 'space-between', md: 'flex-end' } }}>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -122,7 +122,8 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                   transform: 'translateY(-1px)'
                 },
                 transition: 'all 0.2s',
-                display: 'flex'
+                display: 'flex',
+                width: { xs: '100%', sm: 'auto' }
               }}
             >
               <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>New Task</Box>
@@ -131,9 +132,9 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
 
             <NotificationCenter />
 
-            <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)', my: 1 }} />
+            <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)', my: 1, display: { xs: 'none', md: 'block' } }} />
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'flex-end' } }}>
               <Box sx={{ textAlign: 'right', display: { xs: 'none', lg: 'block' } }}>
                 <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2, color: '#fff' }}>
                   {user?.name}
