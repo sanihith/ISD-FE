@@ -43,8 +43,8 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           zIndex: (theme) => theme.zIndex.drawer + 1
         }}
       >
-        <Toolbar sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 0 }, flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'flex-start', md: 'center' }, gap: { xs: 2, md: 0 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', flexWrap: 'wrap' }}>
+        <Toolbar sx={{ px: { xs: 2, md: 4 }, py: 1.25, flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, minWidth: 0 }}>
             <Box
               component="img"
               src={logo}
@@ -64,9 +64,9 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             </Box>
           </Box>
 
-          <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
             {tabs && onTabChange !== undefined && activeTab !== undefined && (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, maxWidth: '100%' }}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'nowrap', justifyContent: 'center', overflowX: 'auto', py: 1, width: '100%', maxWidth: 760 }}>
                 {tabs.map((tab, index) => {
                   const isActive = activeTab === index;
 
@@ -100,7 +100,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', md: 'auto' }, flexWrap: 'wrap', justifyContent: { xs: 'space-between', md: 'flex-end' } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', maxWidth: 380, justifyContent: 'flex-end' }}>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
