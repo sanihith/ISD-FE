@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import type { SyntheticEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -49,6 +50,7 @@ const RequestDetailPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isManager, user } = useAuth();
+  const [tabIndex, setTabIndex] = useState(0);
 
   const { data: requestData, isLoading, error } = useQuery({
     queryKey: ['request', id],
@@ -365,8 +367,19 @@ const RequestDetailPage = () => {
     return { mt: 0.5, borderRadius: 2, ...getDueDateSidebarStyle(date) };
   };
 
+  const tabs = [
+    { label: 'Todos' },
+    { label: 'Tasks Assigned' },
+    { label: 'All Tasks' },
+    { label: 'My Day' },
+    { label: 'Important' },
+    ...(isManager ? [{ label: 'Reportee' }] : []),
+  ];
+
+  const handleTabChange = (_: React.SyntheticEvent, v: number) => setTabIndex(v);
+
   return (
-    <DashboardLayout>
+    <DashboardLayout activeTab={tabIndex} onTabChange={handleTabChange} tabs={tabs}>
       <Box sx={{ maxWidth: 1300, mx: "auto", px: { xs: 2, md: 3 }, py: 3 }}>
         {/* Back button */}
         <Button
