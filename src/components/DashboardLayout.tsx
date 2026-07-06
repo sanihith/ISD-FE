@@ -40,7 +40,10 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(255,255,255,0.1)',
           color: '#fff',
-          zIndex: (theme) => theme.zIndex.drawer + 1
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: (theme) => (theme.zIndex.appBar ?? theme.zIndex.drawer) + 3
         }}
       >
         <Toolbar sx={{ px: { xs: 2, md: 4 }, py: 1.25, flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
@@ -103,29 +106,31 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', maxWidth: 380, justifyContent: 'flex-end' }}>
             <Button
               variant="contained"
-              startIcon={<AddIcon />}
+              startIcon={<AddIcon sx={{ fontSize: 18 }} />}
               onClick={() => setShowNewRequest(true)}
               sx={{
-                borderRadius: 2,
-                px: { xs: 1.5, md: 2.5 },
-                py: 1,
+                borderRadius: 3,
+                px: { xs: 1.25, md: 1.5 },
+                py: 0.5,
                 textTransform: 'none',
                 fontWeight: 700,
-                fontSize: '0.875rem',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
-                background: '#fff',
+                fontSize: '0.85rem',
+                boxShadow: 'none',
+                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.95)',
                 color: 'var(--accent)',
                 '&:hover': {
-                  background: 'rgba(255,255,255,0.92)',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                  background: '#fff',
+                  boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
                   transform: 'translateY(-1px)'
                 },
-                transition: 'all 0.2s',
-                display: 'flex',
-                width: { xs: '100%', sm: 'auto' }
+                transition: 'all 0.15s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                minWidth: 110
               }}
             >
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>New Task</Box>
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, lineHeight: 1 }}>New Task</Box>
               <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>+</Box>
             </Button>
 
