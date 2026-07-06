@@ -6,8 +6,6 @@ import {
   Typography,
   Button,
   Box,
-  Tabs,
-  Tab,
   Avatar,
   IconButton,
   Divider
@@ -66,42 +64,43 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             </Box>
           </Box>
 
-          <Box sx={{ flexGrow: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'center' } }}>
+          <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {tabs && onTabChange !== undefined && activeTab !== undefined && (
-              <Tabs
-                value={activeTab}
-                onChange={onTabChange}
-                variant="scrollable"
-                scrollButtons={false}
-                sx={{
-                  width: '100%',
-                  '& .MuiTabs-indicator': {
-                    height: 3,
-                    borderRadius: '3px 3px 0 0',
-                    background: 'rgba(255,255,255,0.8)'
-                  },
-                  '& .MuiTab-root': {
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.8rem',
-                    minWidth: 'auto',
-                    px: 2,
-                    height: 56,
-                    flexShrink: 0,
-                    color: 'rgba(255,255,255,0.75)',
-                    '&.Mui-selected': { color: '#fff' },
-                    '&:hover': { color: '#fff', background: 'rgba(255,255,255,0.08)' }
-                  }
-                }}
-              >
-                {tabs.map((tab, index) => (
-                  <Tab key={index} label={tab.label} />
-                ))}
-              </Tabs>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, maxWidth: '100%' }}>
+                {tabs.map((tab, index) => {
+                  const isActive = activeTab === index;
+
+                  return (
+                    <Button
+                      key={index}
+                      onClick={(event) => onTabChange?.(event, index)}
+                      variant={isActive ? 'contained' : 'text'}
+                      sx={{
+                        borderRadius: 999,
+                        px: 1.75,
+                        py: 0.75,
+                        minWidth: 'auto',
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        fontSize: '0.8rem',
+                        color: isActive ? '#0f172a' : 'rgba(255,255,255,0.82)',
+                        bgcolor: isActive ? 'rgba(255,255,255,0.95)' : 'transparent',
+                        boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.18)' : 'none',
+                        '&:hover': {
+                          bgcolor: isActive ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.12)',
+                          color: isActive ? '#0f172a' : '#fff'
+                        }
+                      }}
+                    >
+                      {tab.label}
+                    </Button>
+                  );
+                })}
+              </Box>
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', flexWrap: 'wrap', justifyContent: { xs: 'space-between', md: 'flex-end' } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', md: 'auto' }, flexWrap: 'wrap', justifyContent: { xs: 'space-between', md: 'flex-end' } }}>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
