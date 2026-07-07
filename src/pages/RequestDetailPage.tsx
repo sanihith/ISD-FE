@@ -102,6 +102,8 @@ const RequestDetailPage = () => {
     .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatBoxRef = useRef<HTMLDivElement>(null);
+  const prevCommentCountRef = useRef<number>(0);
 
   const canDeleteComment = (msg: any) => {
     if (msg.type === 'SYSTEM') return false;
@@ -131,9 +133,14 @@ const RequestDetailPage = () => {
   };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    const currentCount = displayComments.length;
+    if (currentCount > prevCommentCountRef.current) {
+      // Only scroll INSIDE the chat box — never scroll the whole page
+      if (chatBoxRef.current) {
+        chatBoxRef.current.scrollTo({ top: chatBoxRef.current.scrollHeight, behavior: 'smooth' });
+      }
     }
+    prevCommentCountRef.current = currentCount;
   }, [displayComments]);
 
   const updateMutation = useMutation({
@@ -150,13 +157,11 @@ const RequestDetailPage = () => {
       setLocalSystemMessages((prev) => [...prev, tempMessage]);
       return { tempMessageId: tempMessage.id };
     },
-    onSuccess: async (response, _newStatus, context) => {
+    onSuccess: (response, _newStatus, context) => {
       const updatedRequest = response.data;
       queryClient.setQueryData(['request', id], updatedRequest);
       setLocalSystemMessages((prev) => prev.filter((msg) => msg.id !== context?.tempMessageId));
-      await queryClient.invalidateQueries({ queryKey: ['request', id], refetchType: 'active' });
-      await queryClient.refetchQueries({ queryKey: ['request', id] });
-      await queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
+      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
     },
     onError: (_err, _newStatus, context) => {
       if (context?.tempMessageId) {
@@ -668,7 +673,7 @@ const RequestDetailPage = () => {
 
             {/* Messages Area */}
             <Box
-              ref={scrollRef}
+              ref={chatBoxRef}
               sx={{
                 flex: 1,
                 overflowY: 'auto',
@@ -791,6 +796,8 @@ const RequestDetailPage = () => {
                   </Box>
                 );
               })}
+              {/* Scroll sentinel - scroll to here on new messages */}
+              <div ref={scrollRef} style={{ height: 0, flexShrink: 0 }} />
             </Box>
 
             {/* Reply Bar */}
