@@ -110,7 +110,7 @@ const TodosTab = () => {
         boxShadow: 'var(--shadow-sm)',
         border: '1px solid var(--border)'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <SortIcon sx={{ color: 'var(--accent)', fontSize: 20 }} />
           <Select
             value={sortBy}
@@ -118,7 +118,7 @@ const TodosTab = () => {
             onChange={(e) => setSortBy(e.target.value)}
             sx={{
               borderRadius: 2,
-              minWidth: 150,
+              minWidth: { xs: 120, sm: 150 },
               fontWeight: 600,
               fontSize: '0.85rem',
               '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--border)' },

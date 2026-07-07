@@ -1,7 +1,8 @@
 import { useState, useEffect, type ChangeEvent } from 'react';
 import {
   Dialog, DialogContent, Box, Typography, TextField, Button,
-  IconButton, Tooltip, Divider, Chip, MenuItem, Select, FormControl, InputLabel
+  IconButton, Tooltip, Divider, Chip, MenuItem, Select, FormControl, InputLabel,
+  useMediaQuery, useTheme
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -42,6 +43,8 @@ const INITIAL_STATE = {
 
 const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPopupProps) => {
   const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [formData, setFormData] = useState(INITIAL_STATE);
 
   const [files, setFiles] = useState<File[]>([]);
@@ -115,10 +118,11 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      fullScreen={isMobile}
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 3,
+            borderRadius: isMobile ? 0 : 3,
             boxShadow: '0 24px 48px rgba(0,0,0,0.15)',
             overflow: 'hidden'
           }
@@ -140,7 +144,7 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
         </IconButton>
       </Box>
 
-      <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: '70vh' } }}>
+      <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', height: isMobile ? '100%' : '70vh', overflow: 'hidden' }}>
         <Box sx={{ px: 3, py: 1 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', py: 1, alignItems: 'flex-start', gap: 2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ width: { xs: '100%', sm: 60 } }}>From:</Typography>

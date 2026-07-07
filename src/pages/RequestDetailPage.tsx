@@ -384,7 +384,7 @@ const RequestDetailPage = () => {
 
   return (
     <DashboardLayout activeTab={tabIndex} onTabChange={handleTabChange} tabs={tabs}>
-      <Box sx={{ maxWidth: 1300, mx: "auto", px: { xs: 2, md: 3 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1300, mx: "auto", px: { xs: 0, sm: 1, md: 3 }, py: { xs: 1.5, md: 3 } }}>
         {/* Back button */}
         <Button
           startIcon={<ArrowBackIcon />}
@@ -470,7 +470,7 @@ const RequestDetailPage = () => {
             </Box>
 
             {canManageRequest && (
-              <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0, alignItems: 'center' }}>
+              <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0, alignItems: 'center', flexWrap: 'wrap' }}>
                 <FormControl size="small" sx={{ minWidth: 140 }}>
                   <Select
                     value={selectedStatus || request.status}
@@ -480,7 +480,7 @@ const RequestDetailPage = () => {
                       borderRadius: 2,
                       bgcolor: 'rgba(255,255,255,0.15)',
                       color: '#fff',
-                      fontSize: '0.85rem',
+                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
                       '& .MuiSvgIcon-root': { color: '#fff' },
                       '& .MuiSelect-select': { py: 1 },
@@ -544,8 +544,8 @@ const RequestDetailPage = () => {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            height: { xs: 'auto', md: 'calc(100vh - 160px)' },
-            minHeight: { xs: 'auto', md: 700 },
+            height: { xs: 'calc(100vh - 100px)', md: 'calc(100vh - 160px)' },
+            minHeight: { xs: 500, md: 700 },
             border: '1px solid var(--border)'
           }}>
             {/* Chat Header */}
@@ -633,7 +633,7 @@ const RequestDetailPage = () => {
                   color: 'rgba(255, 255, 255, 0.88)',
                   lineHeight: 1.5,
                   whiteSpace: 'pre-wrap',
-                  maxHeight: '150px',
+                  maxHeight: { xs: '80px', md: '150px' },
                   overflowY: 'auto',
                   pr: 1,
                   '&::-webkit-scrollbar': { width: '4px' },
@@ -819,14 +819,14 @@ const RequestDetailPage = () => {
 
             {/* Input Bar */}
             <Box sx={{
-              px: 2,
+              px: { xs: 1, sm: 2 },
               py: 1.5,
               borderTop: '1px solid var(--border)',
               bgcolor: '#fff',
               display: 'flex',
-              gap: 1.5,
+              gap: 1,
               alignItems: 'flex-end',
-              flexDirection: { xs: 'column', sm: 'row' }
+              flexDirection: 'row'
             }}>
               <IconButton
                 size="small"
@@ -836,8 +836,7 @@ const RequestDetailPage = () => {
                   color: 'var(--text-muted)',
                   bgcolor: 'var(--accent-bg)',
                   '&:hover': { bgcolor: 'var(--accent)', color: '#fff' },
-                  flexShrink: 0,
-                  width: { xs: '100%', sm: 'auto' }
+                  flexShrink: 0
                 }}
               >
                 <AttachFile fontSize="small" />

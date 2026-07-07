@@ -58,6 +58,10 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   overflow-x: hidden;
@@ -89,4 +93,11 @@ h2 {
 
 p {
   margin: 0;
+}
+
+/* Safe area support for iOS bottom nav */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
