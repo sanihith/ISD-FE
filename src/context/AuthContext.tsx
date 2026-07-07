@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const [token, setTokenState] = useState<string | null>(() => localStorage.getItem('jwt_token'));
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(() => !!localStorage.getItem('jwt_token'));
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Always start loading to check cookie-based session
 
   const setToken = useCallback((value: string | null) => {
     if (value) {
@@ -72,19 +72,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Validate token on mount - works for both localStorage token and HTTP-only cookie
   useEffect(() => {
     let mounted = true;
-    if (token) {
-      setIsLoading(true);
-      validateToken().finally(() => {
-        if (mounted) setIsLoading(false);
-      });
-    } else {
-      setUser(null);
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    validateToken().finally(() => {
+      if (mounted) setIsLoading(false);
+    });
     return () => { mounted = false; };
-  }, [token, validateToken]);
+  }, [validateToken]);
 
   const getLoginUrl = () => {
     if (import.meta.env.VITE_AUTH_LOGIN_URL) return import.meta.env.VITE_AUTH_LOGIN_URL;
@@ -118,7 +114,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = getLoginUrl();
   }, [setToken]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Call backend to clear HTTP-only cookie
+    try {
+      await apiClient.post('/auth/logout');
+    } catch (e) {
+      // Ignore logout errors
+    }
     setToken(null);
     setUser(null);
     queryClient.clear();
@@ -143,7 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isManager = ['MANAGER', 'DIRECTOR', 'ADMIN', 'ROLE_MANAGER', 'ROLE_DIRECTOR', 'ROLE_ADMIN'].includes(normalizedRole);
   const isAdmin = normalizedRole === 'ADMIN' || normalizedRole === 'ROLE_ADMIN';
 
-  const isAuthenticated = !!token && !!user;
+  const isAuthenticated = !!user; // Authenticated if user exists (via token or cookie)
 
   return (
     <AuthContext.Provider value={{ user, token, setToken, login, teamsLogin, logout, isAuthenticated, isLoading, isManager, isAdmin }}>
