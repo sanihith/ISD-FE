@@ -86,8 +86,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => { mounted = false; };
   }, [token, validateToken]);
 
+  const getLoginUrl = () => {
+    if (import.meta.env.VITE_AUTH_LOGIN_URL) return import.meta.env.VITE_AUTH_LOGIN_URL;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+    return `${baseUrl}/auth/login`;
+  };
+
   const login = useCallback(() => {
-    window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
+    window.location.href = getLoginUrl();
   }, []);
 
   const teamsLogin = useCallback(async () => {
@@ -109,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Fall through to redirect login
       }
     }
-    window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
+    window.location.href = getLoginUrl();
   }, [setToken]);
 
   const logout = useCallback(() => {
@@ -125,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         getTeamsUser().then(user => {
           if (user?.email && token) {
             apiClient.get('/auth/me').catch(() => {
-              window.location.href = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:8080/api/auth/login';
+              window.location.href = getLoginUrl();
             });
           }
         });
