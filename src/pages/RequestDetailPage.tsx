@@ -84,7 +84,6 @@ const RequestDetailPage = () => {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [menuMessage, setMenuMessage] = useState<any>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: number; name: string; content: string } | null>(null);
-  const [localSystemMessages, setLocalSystemMessages] = useState<any[]>([]);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -92,13 +91,7 @@ const RequestDetailPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    setLocalSystemMessages((messages) =>
-      messages.filter((msg) => (now - new Date(msg.createdAt).getTime()) < 120000)
-    );
-  }, [now]);
-
-  const displayComments = [...comments, ...localSystemMessages]
+  const displayComments = [...comments]
     .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -148,25 +141,45 @@ const RequestDetailPage = () => {
       apiClient.put(`/requests/${id}`, { status: newStatus }),
     onMutate: async (newStatus: string) => {
       const oldStatus = request?.status ?? 'OPEN';
+      
+      await queryClient.cancelQueries({ queryKey: ['request', id] });
+      await queryClient.cancelQueries({ queryKey: ['request-comments', id] });
+      
+      const previousRequest = queryClient.getQueryData(['request', id]);
+      const previousComments = queryClient.getQueryData(['request-comments', id]);
+      
+      // Optimistically update request status
+      queryClient.setQueryData(['request', id], (old: any) => ({
+        ...old,
+        status: newStatus
+      }));
+      
+      // Optimistically add system message
       const tempMessage = {
         id: -Date.now(),
         content: `Status changed from ${getStatusLabel(oldStatus)} to ${getStatusLabel(newStatus)}`,
         createdAt: new Date().toISOString(),
         type: 'SYSTEM'
       };
-      setLocalSystemMessages((prev) => [...prev, tempMessage]);
-      return { tempMessageId: tempMessage.id };
+      
+      queryClient.setQueryData(['request-comments', id], (old: any[]) => [...(old || []), tempMessage]);
+      
+      return { previousRequest, previousComments };
     },
-    onSuccess: (response, _newStatus, context) => {
-      const updatedRequest = response.data;
-      queryClient.setQueryData(['request', id], updatedRequest);
-      setLocalSystemMessages((prev) => prev.filter((msg) => msg.id !== context?.tempMessageId));
-      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
+    onSuccess: (response) => {
+      queryClient.setQueryData(['request', id], response.data);
     },
     onError: (_err, _newStatus, context) => {
-      if (context?.tempMessageId) {
-        setLocalSystemMessages((prev) => prev.filter((msg) => msg.id !== context.tempMessageId));
+      if (context?.previousRequest) {
+        queryClient.setQueryData(['request', id], context.previousRequest);
       }
+      if (context?.previousComments) {
+        queryClient.setQueryData(['request-comments', id], context.previousComments);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['request', id] });
+      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
     }
   });
 

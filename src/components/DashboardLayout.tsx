@@ -42,7 +42,7 @@ const TAB_ICONS: Record<string, ReactNode> = {
   'All Tasks':      <AllTasksIcon />,
   'My Day':         <MyDayIcon />,
   'Important':      <ImportantIcon />,
-  'Reportee':       <ReporteeIcon />,
+  'Reportees':      <ReporteeIcon />,
 };
 
 const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLayoutProps) => {

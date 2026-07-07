@@ -9,10 +9,9 @@ import TodosTab from '../components/TodosTab';
 import MyDayTab from '../components/MyDayTab';
 import ImportantTab from '../components/ImportantTab';
 import ReporteesTab from '../components/ReporteesTab';
-import { useAuth } from '../context/AuthContext';
+
 
 const DashboardPage = () => {
-  const { isManager } = useAuth();
   const [tabIndex, setTabIndex] = useState(0);
 
   const tabs = [
@@ -21,7 +20,7 @@ const DashboardPage = () => {
     { label: 'All Tasks', component: <AllTasksTab /> },
     { label: 'My Day', component: <MyDayTab /> },
     { label: 'Important', component: <ImportantTab /> },
-    ...(isManager ? [{ label: 'Reportee', component: <ReporteesTab /> }] : []),
+    { label: 'Reportees', component: <ReporteesTab /> },
   ];
 
   const handleTabChange = (_: React.SyntheticEvent, v: number) => setTabIndex(v);
