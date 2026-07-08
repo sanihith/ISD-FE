@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const AuthCallbackPage = () => {
   const [searchParams] = useSearchParams();
-  const { logout } = useAuth();
+  const { logout, setToken } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,10 +18,19 @@ const AuthCallbackPage = () => {
       return;
     }
 
-    // No token in URL anymore - cookie is set by backend
-    // Just navigate to dashboard, AuthContext will validate via /api/auth/me
+    // Extract token from URL hash fragment (e.g., #token=xxx)
+    const hash = window.location.hash;
+    const tokenMatch = hash.match(/[#&]token=([^&]+)/);
+    if (tokenMatch && tokenMatch[1]) {
+      const token = decodeURIComponent(tokenMatch[1]);
+      setToken(token);
+      // Clean up URL hash
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    }
+
+    // Navigate to dashboard
     navigate('/dashboard');
-  }, [searchParams, logout, navigate]);
+  }, [searchParams, logout, navigate, setToken]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', px: 3, textAlign: 'center' }}>
