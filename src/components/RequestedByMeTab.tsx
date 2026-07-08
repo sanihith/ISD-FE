@@ -247,7 +247,7 @@ const RequestedByMeTab = () => {
                 <TableCell>Task</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Due Date</TableCell>
-                <TableCell>Assigned To</TableCell>
+                <TableCell>Reportee</TableCell>
                 <TableCell align="right">Focus</TableCell>
               </TableRow>
             </TableHead>

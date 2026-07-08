@@ -171,7 +171,7 @@ const MyDayTab = () => {
                   <TableCell>Task</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
-                  <TableCell>Assignee</TableCell>
+                  <TableCell>Reportee</TableCell>
                   <TableCell align="right">Focus</TableCell>
                 </TableRow>
               </TableHead>
