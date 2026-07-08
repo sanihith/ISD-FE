@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Validate token on mount - works for both localStorage token and HTTP-only cookie
+  // Validate token on mount and when token changes
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (mounted) setIsLoading(false);
     });
     return () => { mounted = false; };
-  }, [validateToken]);
+  }, [validateToken, token]);
 
   const getLoginUrl = () => {
     if (import.meta.env.VITE_AUTH_LOGIN_URL) return import.meta.env.VITE_AUTH_LOGIN_URL;
