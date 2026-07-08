@@ -5,7 +5,14 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import './index.css'
 import App from './App.tsx'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 10 * 1000, 
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 const theme = createTheme({
   palette: {
