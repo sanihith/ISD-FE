@@ -91,7 +91,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           </Box>
 
           {/* Desktop tab pills — hidden on mobile */}
-          <Box sx={{ flexGrow: 1, minWidth: 0, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', width: '100%', overflow: 'hidden', px: { md: 1, lg: 2 } }}>
+          <Box sx={{ flex: 1, minWidth: 0, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', overflow: 'hidden', px: { md: 1, lg: 2 } }}>
             {hasTabs && (
               <Box sx={{ 
                 display: 'flex', gap: 1, flexWrap: 'nowrap', 
@@ -133,7 +133,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', maxWidth: 380, justifyContent: 'flex-end', ml: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', justifyContent: 'flex-end', ml: 1 }}>
             <Button
               variant="contained"
               startIcon={<AddIcon sx={{ fontSize: 18 }} />}
