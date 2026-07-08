@@ -147,7 +147,7 @@ const AllTasksTab = () => {
 
   const statusOptions = ['ALL', 'OPEN', 'IN_PROGRESS', 'COMPLETED', 'REJECTED'];
   const sourceOptions: { label: string; value: SourceType }[] = [
-    { label: 'All Sources', value: 'ALL' },
+    { label: 'All Tasks', value: 'ALL' },
     { label: 'Tasks Assigned', value: 'REQUESTED' },
     { label: 'Assigned To Me', value: 'TODO' }
   ];
