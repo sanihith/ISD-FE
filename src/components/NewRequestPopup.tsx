@@ -1,7 +1,7 @@
 import { useState, useEffect, type ChangeEvent } from 'react';
 import {
   Dialog, DialogContent, Box, Typography, TextField, Button,
-  IconButton, Tooltip, Chip, MenuItem, Select, FormControl, InputLabel,
+  IconButton, Tooltip, Chip, MenuItem, Select, FormControl,
   useMediaQuery, useTheme, CircularProgress
 } from '@mui/material';
 import {
