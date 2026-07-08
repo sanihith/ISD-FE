@@ -323,7 +323,6 @@ const TodosTab = () => {
                   <TableCell>Task</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
-                  <TableCell>Reportee</TableCell>
                   <TableCell align="right">Focus</TableCell>
                 </TableRow>
               </TableHead>
@@ -367,12 +366,6 @@ const TodosTab = () => {
                       />
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={todo.requestedByDate} /></TableCell>
-                    <TableCell sx={{ py: 1.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: 'var(--accent)' }}>{getUserInitial(todo.createdBy)}</Avatar>
-                        <Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>{getUserName(todo.createdBy)}</Typography>
-                      </Box>
-                    </TableCell>
                     <TableCell align="right" sx={{ py: 1.5 }}>
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
                         <IconButton
