@@ -49,6 +49,15 @@ const TAB_ICONS: Record<string, ReactNode> = {
   'Reportees': <ReporteeIcon />,
 };
 
+const formatRole = (role?: string) => {
+  if (!role) return '';
+  return role
+    .replace(/^ROLE_/, '')
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
 const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLayoutProps) => {
   const { user, logout } = useAuth();
   const [showNewRequest, setShowNewRequest] = useState(false);
@@ -219,7 +228,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                   {user?.name}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.65, fontSize: '0.7rem' }}>
-                  {user?.role}
+                  {formatRole(user?.role)}
                 </Typography>
               </Box>
               <Avatar
