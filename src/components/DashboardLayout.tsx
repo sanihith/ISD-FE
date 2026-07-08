@@ -91,9 +91,15 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           </Box>
 
           {/* Desktop tab pills — hidden on mobile */}
-          <Box sx={{ flexGrow: 1, minWidth: 0, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
+          <Box sx={{ flexGrow: 1, minWidth: 0, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', width: '100%', overflow: 'hidden', px: { md: 1, lg: 2 } }}>
             {hasTabs && (
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'nowrap', justifyContent: 'center', overflowX: 'auto', py: 1, width: '100%', maxWidth: 760 }}>
+              <Box sx={{ 
+                display: 'flex', gap: 1, flexWrap: 'nowrap', 
+                justifyContent: { md: 'flex-start', lg: 'center' }, 
+                overflowX: 'auto', py: 1, width: '100%', maxWidth: 760,
+                '&::-webkit-scrollbar': { display: 'none' },
+                scrollbarWidth: 'none',
+              }}>
                 {tabs.map((tab, index) => {
                   const isActive = activeTab === index;
                   return (
@@ -109,6 +115,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                         textTransform: 'none',
                         fontWeight: 700,
                         fontSize: '0.8rem',
+                        whiteSpace: 'nowrap',
                         color: isActive ? '#0f172a' : 'rgba(255,255,255,0.82)',
                         bgcolor: isActive ? 'rgba(255,255,255,0.95)' : 'transparent',
                         boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.18)' : 'none',
@@ -126,7 +133,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', maxWidth: 380, justifyContent: 'flex-end' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', maxWidth: 380, justifyContent: 'flex-end', ml: 1 }}>
             <Button
               variant="contained"
               startIcon={<AddIcon sx={{ fontSize: 18 }} />}
@@ -142,6 +149,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 border: '1px solid rgba(255,255,255,0.12)',
                 background: 'rgba(255,255,255,0.95)',
                 color: 'var(--accent)',
+                whiteSpace: 'nowrap',
                 '&:hover': {
                   background: '#fff',
                   boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
@@ -150,7 +158,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 transition: 'all 0.15s',
                 display: 'inline-flex',
                 alignItems: 'center',
-                minWidth: 110
+                minWidth: '120px'
               }}
             >
               <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, lineHeight: 1 }}>New Task</Box>
