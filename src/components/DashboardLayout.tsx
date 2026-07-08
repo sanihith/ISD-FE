@@ -9,7 +9,6 @@ import {
   Avatar,
   IconButton,
   Divider,
-  Paper,
   useMediaQuery,
   useTheme,
   Menu,
@@ -86,7 +85,10 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                   anchorEl={mobileMenuAnchor}
                   open={Boolean(mobileMenuAnchor)}
                   onClose={() => setMobileMenuAnchor(null)}
-                  PaperProps={{ sx: { width: 220, mt: 1.5, borderRadius: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' } }}
+                  sx={{ 
+                    mt: 1.5,
+                    '& .MuiPaper-root': { width: 220, borderRadius: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }
+                  }}
                 >
                   {tabs.map((tab, index) => (
                     <MenuItem 
@@ -101,7 +103,11 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                       <ListItemIcon sx={{ color: activeTab === index ? 'var(--accent)' : 'inherit', minWidth: 36 }}>
                         {TAB_ICONS[tab.label] ?? <AllTasksIcon />}
                       </ListItemIcon>
-                      <ListItemText primary={tab.label} primaryTypographyProps={{ fontWeight: activeTab === index ? 700 : 500, fontSize: '0.9rem' }} />
+                      <ListItemText primary={
+                        <Typography sx={{ fontWeight: activeTab === index ? 700 : 500, fontSize: '0.9rem' }}>
+                          {tab.label}
+                        </Typography>
+                      } />
                     </MenuItem>
                   ))}
                 </Menu>
