@@ -25,8 +25,23 @@ const USER_CACHE_TTL = 1000 * 60 * 10; // 10 minutes
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const [token, setTokenState] = useState<string | null>(() => localStorage.getItem('jwt_token'));
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Always start loading to check cookie-based session
+
+  // Pre-load from cache synchronously so we never start in a loading state unnecessarily
+  const [user, setUser] = useState<any>(() => {
+    const cached = localStorage.getItem(USER_CACHE_KEY);
+    if (cached) {
+      try {
+        const { user: cachedUser, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USER_CACHE_TTL) return cachedUser;
+      } catch { /* ignore */ }
+    }
+    return null;
+  });
+
+  // If there's no token AND no cached user, we know immediately we're not authenticated.
+  // Avoid any network call and set loading = false right away → login page paints instantly.
+  const hasToken = !!localStorage.getItem('jwt_token');
+  const [isLoading, setIsLoading] = useState<boolean>(hasToken);
 
   const setToken = useCallback((value: string | null) => {
     if (value) {
@@ -37,21 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem(USER_CACHE_KEY);
     }
     setTokenState(value);
-  }, []);
-
-  // Load cached user immediately to avoid flash
-  useEffect(() => {
-    const cached = localStorage.getItem(USER_CACHE_KEY);
-    if (cached) {
-      try {
-        const { user: cachedUser, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < USER_CACHE_TTL) {
-          setUser(cachedUser);
-        }
-      } catch {
-        // Ignore cache parse errors
-      }
-    }
   }, []);
 
   const validateToken = useCallback(async (tokenToValidate: string | null, signal?: AbortSignal) => {
@@ -79,8 +79,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Validate token on mount and when token changes
+  // Validate token on mount and when token changes.
+  // Skip entirely if there's no token — no point in making a network call we know will fail.
   useEffect(() => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
     let mounted = true;
     const controller = new AbortController();
     setIsLoading(true);
