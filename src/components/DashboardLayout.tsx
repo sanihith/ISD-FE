@@ -41,12 +41,12 @@ interface DashboardLayoutProps {
 
 // Map tab labels to icons
 const TAB_ICONS: Record<string, ReactNode> = {
-  'Todos':          <TodoIcon />,
+  'Todos': <TodoIcon />,
   'Tasks Assigned': <AssignedIcon />,
-  'All Tasks':      <AllTasksIcon />,
-  'My Day':         <MyDayIcon />,
-  'Important':      <ImportantIcon />,
-  'Reportees':      <ReporteeIcon />,
+  'All Tasks': <AllTasksIcon />,
+  'My Day': <MyDayIcon />,
+  'Important': <ImportantIcon />,
+  'Reportees': <ReporteeIcon />,
 };
 
 const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLayoutProps) => {
@@ -86,14 +86,14 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                   anchorEl={mobileMenuAnchor}
                   open={Boolean(mobileMenuAnchor)}
                   onClose={() => setMobileMenuAnchor(null)}
-                  sx={{ 
+                  sx={{
                     mt: 1.5,
                     '& .MuiPaper-root': { width: 220, borderRadius: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }
                   }}
                 >
                   {tabs.map((tab, index) => (
-                    <MenuItem 
-                      key={index} 
+                    <MenuItem
+                      key={index}
                       selected={activeTab === index}
                       onClick={(e) => {
                         onTabChange?.(e as any, index);
@@ -125,7 +125,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             </Avatar>
             <Box sx={{ minWidth: 0, overflow: 'hidden' }}>
               <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.2 }}>
-                WorkTrack
+                ISD
               </Typography>
               <Typography variant="caption" noWrap sx={{ opacity: 0.7, fontSize: '0.65rem', letterSpacing: '0.5px', display: 'block' }}>
                 Task Management
@@ -136,9 +136,9 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
           {/* Desktop tab pills — hidden on mobile */}
           <Box sx={{ flex: 1, minWidth: 0, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', overflow: 'hidden', px: { md: 1, lg: 2 } }}>
             {hasTabs && (
-              <Box sx={{ 
-                display: 'flex', gap: 1, flexWrap: 'nowrap', 
-                justifyContent: { md: 'flex-start', lg: 'center' }, 
+              <Box sx={{
+                display: 'flex', gap: 1, flexWrap: 'nowrap',
+                justifyContent: { md: 'flex-start', lg: 'center' },
                 overflowX: 'auto', py: 1, width: '100%', maxWidth: 760,
                 '&::-webkit-scrollbar': { display: 'none' },
                 scrollbarWidth: 'none',
