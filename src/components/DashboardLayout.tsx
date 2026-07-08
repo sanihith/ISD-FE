@@ -11,9 +11,14 @@ import {
   Divider,
   Paper,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import {
+  Menu as MenuIcon,
   Logout as LogoutIcon,
   Add as AddIcon,
   CheckBox as TodoIcon,
@@ -48,6 +53,7 @@ const TAB_ICONS: Record<string, ReactNode> = {
 const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLayoutProps) => {
   const { user, logout } = useAuth();
   const [showNewRequest, setShowNewRequest] = useState(false);
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -70,7 +76,37 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
         }}
       >
         <Toolbar sx={{ px: { xs: 2, md: 4 }, py: 1.25, flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexShrink: 0, minWidth: 0 }}>
+            {hasTabs && isMobile && (
+              <>
+                <IconButton edge="start" color="inherit" aria-label="menu" onClick={(e) => setMobileMenuAnchor(e.currentTarget)} sx={{ mr: 0 }}>
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={mobileMenuAnchor}
+                  open={Boolean(mobileMenuAnchor)}
+                  onClose={() => setMobileMenuAnchor(null)}
+                  PaperProps={{ sx: { width: 220, mt: 1.5, borderRadius: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' } }}
+                >
+                  {tabs.map((tab, index) => (
+                    <MenuItem 
+                      key={index} 
+                      selected={activeTab === index}
+                      onClick={(e) => {
+                        onTabChange?.(e as any, index);
+                        setMobileMenuAnchor(null);
+                      }}
+                      sx={{ py: 1.5 }}
+                    >
+                      <ListItemIcon sx={{ color: activeTab === index ? 'var(--accent)' : 'inherit', minWidth: 36 }}>
+                        {TAB_ICONS[tab.label] ?? <AllTasksIcon />}
+                      </ListItemIcon>
+                      <ListItemText primary={tab.label} primaryTypographyProps={{ fontWeight: activeTab === index ? 700 : 500, fontSize: '0.9rem' }} />
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            )}
             <Box
               component="img"
               src={logo}
@@ -140,7 +176,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
               onClick={() => setShowNewRequest(true)}
               sx={{
                 borderRadius: 3,
-                px: { xs: 1.25, md: 1.5 },
+                px: { xs: 1.5, md: 1.5 },
                 py: 0.5,
                 textTransform: 'none',
                 fontWeight: 700,
@@ -158,11 +194,9 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 transition: 'all 0.15s',
                 display: 'inline-flex',
                 alignItems: 'center',
-                minWidth: '120px'
               }}
             >
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, lineHeight: 1 }}>New Task</Box>
-              <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>+</Box>
+              <Box component="span" sx={{ lineHeight: 1 }}>New Task</Box>
             </Button>
 
             <NotificationCenter />
@@ -208,116 +242,17 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
         </Toolbar>
       </AppBar>
 
-      {/* Main content — adds bottom padding on mobile so content isn't hidden behind bottom nav */}
+      {/* Main content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           px: { xs: 1.5, sm: 2, md: 4, lg: 6 },
           py: { xs: 2, md: 4 },
-          pb: { xs: hasTabs && isMobile ? 10 : 2, md: 4 }
         }}
       >
         {children}
       </Box>
-
-      {/* Mobile Bottom Navigation — shown only on xs/sm when tabs are present */}
-      {hasTabs && isMobile && (
-        <Paper
-          elevation={8}
-          className="mobile-bottom-nav"
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: (theme) => theme.zIndex.appBar + 2,
-            borderTop: '1px solid var(--border)',
-            borderRadius: 0,
-            background: 'var(--header-gradient)',
-            backdropFilter: 'blur(12px)',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'stretch',
-              overflowX: 'auto',
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
-              px: 0.5,
-              py: 0.5,
-            }}
-          >
-            {tabs.map((tab, index) => {
-              const isActive = activeTab === index;
-              const icon = TAB_ICONS[tab.label] ?? <AllTasksIcon />;
-              return (
-                <Box
-                  key={index}
-                  onClick={(e) => onTabChange?.(e as any, index)}
-                  sx={{
-                    flex: '0 0 auto',
-                    minWidth: tabs.length <= 5 ? `${100 / tabs.length}%` : 72,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 0.4,
-                    py: 1,
-                    px: 0.5,
-                    cursor: 'pointer',
-                    borderRadius: 2,
-                    mx: 0.25,
-                    transition: 'all 0.18s cubic-bezier(0.4,0,0.2,1)',
-                    bgcolor: isActive ? 'rgba(255,255,255,0.18)' : 'transparent',
-                    position: 'relative',
-                    '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.12)',
-                    },
-                    // Active indicator dot
-                    '&::after': isActive ? {
-                      content: '""',
-                      position: 'absolute',
-                      top: 4,
-                      width: 4,
-                      height: 4,
-                      borderRadius: '50%',
-                      bgcolor: '#fff',
-                    } : {},
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: isActive ? '#fff' : 'rgba(255,255,255,0.55)',
-                      transition: 'color 0.18s, transform 0.18s',
-                      transform: isActive ? 'scale(1.15)' : 'scale(1)',
-                      display: 'flex',
-                      '& svg': { fontSize: 22 }
-                    }}
-                  >
-                    {icon}
-                  </Box>
-                  <Typography
-                    sx={{
-                      fontSize: '0.6rem',
-                      fontWeight: isActive ? 800 : 500,
-                      color: isActive ? '#fff' : 'rgba(255,255,255,0.55)',
-                      lineHeight: 1.1,
-                      textAlign: 'center',
-                      whiteSpace: 'nowrap',
-                      letterSpacing: isActive ? '0.02em' : '0',
-                      transition: 'all 0.18s',
-                    }}
-                  >
-                    {tab.label}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        </Paper>
-      )}
 
       <NewRequestPopup open={showNewRequest} onClose={() => setShowNewRequest(false)} />
     </Box>
