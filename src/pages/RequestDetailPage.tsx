@@ -259,6 +259,7 @@ const RequestDetailPage = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
+      queryClient.invalidateQueries({ queryKey: ['request', id] });
       setReplyingTo(null);
     }
   });
@@ -268,6 +269,7 @@ const RequestDetailPage = () => {
       apiClient.delete(`/attachments/${attachmentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['request', id] });
+      queryClient.invalidateQueries({ queryKey: ['request-comments', id] });
     },
     onError: (err: any) => {
       console.error('Delete attachment failed:', err);
@@ -883,8 +885,9 @@ const RequestDetailPage = () => {
                           position: 'relative',
                           background: isSelf ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#fff',
                           color: isSelf ? '#fff' : '#1e293b',
-                          borderRadius: isSelf ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                          p: 2,
+                          borderRadius: isSelf ? '12px 12px 0px 12px' : '12px 12px 12px 0px',
+                          py: 0.8,
+                          px: 1.5,
                           boxShadow: isSelf ? '0 4px 12px rgba(37,99,235,0.2)' : '0 4px 12px rgba(0,0,0,0.04)',
                           border: isSelf ? 'none' : '1px solid rgba(0,0,0,0.03)',
                           pr: '28px'
@@ -910,7 +913,7 @@ const RequestDetailPage = () => {
                             {getUserName(msg.createdBy)}
                           </Typography>
                         )}
-                        <Typography sx={{ lineHeight: 1.6, whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
+                        <Typography sx={{ lineHeight: 1.4, whiteSpace: 'pre-wrap', fontSize: '0.86rem' }}>
                           {msg.content}
                         </Typography>
                         {msg.attachments?.length > 0 && (
