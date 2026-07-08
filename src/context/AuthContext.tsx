@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const setToken = useCallback((value: string | null) => {
     if (value) {
       localStorage.setItem('jwt_token', value);
+      setIsLoading(true);
     } else {
       localStorage.removeItem('jwt_token');
       localStorage.removeItem(USER_CACHE_KEY);
@@ -53,9 +54,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const validateToken = useCallback(async () => {
+  const validateToken = useCallback(async (tokenToValidate: string | null, signal?: AbortSignal) => {
     try {
-      const res = await apiClient.get('/auth/me');
+      const res = await apiClient.get('/auth/me', { signal });
       const userData = res.data;
       setUser(userData);
       localStorage.setItem(USER_CACHE_KEY, JSON.stringify({
@@ -63,11 +64,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         timestamp: Date.now()
       }));
       return userData;
-    } catch {
-      localStorage.removeItem('jwt_token');
-      localStorage.removeItem(USER_CACHE_KEY);
-      setTokenState(null);
-      setUser(null);
+    } catch (error: any) {
+      if (error?.name === 'CanceledError') {
+        return null;
+      }
+      const currentStorageToken = localStorage.getItem('jwt_token');
+      if (currentStorageToken === tokenToValidate || (!tokenToValidate && !currentStorageToken)) {
+        localStorage.removeItem('jwt_token');
+        localStorage.removeItem(USER_CACHE_KEY);
+        setTokenState(null);
+        setUser(null);
+      }
       return null;
     }
   }, []);
@@ -75,11 +82,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Validate token on mount and when token changes
   useEffect(() => {
     let mounted = true;
+    const controller = new AbortController();
     setIsLoading(true);
-    validateToken().finally(() => {
+    validateToken(token, controller.signal).finally(() => {
       if (mounted) setIsLoading(false);
     });
-    return () => { mounted = false; };
+    return () => { 
+      mounted = false;
+      controller.abort();
+    };
   }, [validateToken, token]);
 
   const getLoginUrl = () => {
