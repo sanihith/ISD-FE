@@ -143,12 +143,13 @@ const RequestedByMeTab = () => {
                 borderRadius: 3,
                 boxShadow: 'var(--shadow)',
                 border: req.isImportant ? '2px solid var(--warning)' : '1px solid var(--border)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
                 position: 'relative',
                 '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 'var(--shadow-lg)'
+                  transform: 'translateY(-6px)',
+                  boxShadow: 'var(--shadow-lg)',
+                  borderColor: 'var(--accent)'
                 }
               }}
             >
@@ -239,21 +240,34 @@ const RequestedByMeTab = () => {
           <Box sx={{ overflowX: 'auto' }}>
             <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{ bgcolor: 'var(--accent-bg)' }}>
-                <TableCell sx={{ fontWeight: 800 }}>Task</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Due Date</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Assigned To</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800 }}>Focus</TableCell>
+              <TableRow sx={{
+                background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+                '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 }
+              }}>
+                <TableCell>Task</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Due Date</TableCell>
+                <TableCell>Assigned To</TableCell>
+                <TableCell align="right">Focus</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredRequests?.map((req: any) => (
                 <TableRow 
                   key={req.id}
-                  hover
                   onClick={() => navigate(`/request/${req.id}`)}
-                  sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
+                  sx={{ 
+                    cursor: 'pointer', 
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    borderLeft: '3px solid transparent',
+                    '&:hover': { 
+                      bgcolor: 'rgba(37, 99, 235, 0.04)', 
+                      borderLeftColor: 'var(--accent)',
+                      transform: 'scale(1.002)',
+                      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)'
+                    },
+                    '&:last-child td, &:last-child th': { border: 0 } 
+                  }}
                 >
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)' }}>{req.subject}</Typography>

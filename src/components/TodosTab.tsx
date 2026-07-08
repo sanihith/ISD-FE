@@ -312,7 +312,7 @@ const TodosTab = () => {
           ))}
         </Box>
       ) : (
-        <Box sx={{ bgcolor: '#fff', borderRadius: 3, boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ bgcolor: '#fff', borderRadius: 3, boxShadow: 'var(--shadow)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ overflowX: 'auto' }}>
             <Table sx={{ minWidth: 650 }}>
               <TableHead>
@@ -334,8 +334,14 @@ const TodosTab = () => {
                     onClick={() => navigate(`/request/${todo.id}`)}
                     sx={{
                       cursor: 'pointer',
-                      transition: 'all 0.15s',
-                      '&:hover': { bgcolor: 'var(--accent-bg)' },
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      borderLeft: '3px solid transparent',
+                      '&:hover': {
+                        bgcolor: 'rgba(37, 99, 235, 0.04)',
+                        borderLeftColor: 'var(--accent)',
+                        transform: 'scale(1.002)',
+                        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)'
+                      },
                       '&:last-child td': { border: 0 }
                     }}
                   >

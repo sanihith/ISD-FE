@@ -270,10 +270,10 @@ const AllTasksTab = () => {
                 borderRadius: 3,
                 boxShadow: 'var(--shadow)',
                 border: task.isImportant ? '2px solid var(--warning)' : '1px solid var(--border)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
                 position: 'relative',
-                '&:hover': { transform: 'translateY(-4px)', boxShadow: 'var(--shadow-lg)' }
+                '&:hover': { transform: 'translateY(-6px)', boxShadow: 'var(--shadow-lg)', borderColor: 'var(--accent)' }
               }}
             >
               <CardContent sx={{ p: 3 }}>
@@ -343,7 +343,7 @@ const AllTasksTab = () => {
           ))}
         </Box>
       ) : (
-        <Box sx={{ bgcolor: '#fff', borderRadius: 3, boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ bgcolor: '#fff', borderRadius: 3, boxShadow: 'var(--shadow)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ overflowX: 'auto' }}>
             <Table sx={{ minWidth: 650 }}>
               <TableHead>
@@ -357,7 +357,7 @@ const AllTasksTab = () => {
               </TableHead>
               <TableBody>
                 {filteredTasks.map((task: any) => (
-                  <TableRow key={task.id} onClick={() => navigate(`/request/${task.id}`)} sx={{ cursor: 'pointer', transition: 'all 0.15s', '&:hover': { bgcolor: 'var(--accent-bg)' }, '&:last-child td': { border: 0 } }}>
+                  <TableRow key={task.id} onClick={() => navigate(`/request/${task.id}`)} sx={{ cursor: 'pointer', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', borderLeft: '3px solid transparent', '&:hover': { bgcolor: 'rgba(37, 99, 235, 0.04)', borderLeftColor: 'var(--accent)', transform: 'scale(1.002)', boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)' }, '&:last-child td': { border: 0 } }}>
                     <TableCell sx={{ py: 1.5 }}><Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.875rem' }}>{task.subject}</Typography></TableCell>
                     <TableCell sx={{ py: 1.5 }}>{getSourceChip(task._sources)}</TableCell>
                     <TableCell sx={{ py: 1.5 }}><Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : 'var(--text-h)', border: 'none' }} /></TableCell>

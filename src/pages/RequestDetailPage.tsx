@@ -18,6 +18,9 @@ import {
   Select,
   MenuItem,
   Menu,
+  Drawer,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import {
   AttachFile,
@@ -50,6 +53,10 @@ const RequestDetailPage = () => {
   const queryClient = useQueryClient();
   const { isManager, user } = useAuth();
   const [tabIndex, setTabIndex] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [mobileDrawerMode, setMobileDrawerMode] = useState<'details' | 'attachments'>('details');
 
   const { data: requestData, isLoading, error } = useQuery({
     queryKey: ['request', id],
@@ -395,6 +402,169 @@ const RequestDetailPage = () => {
 
   const handleTabChange = (_: React.SyntheticEvent, v: number) => setTabIndex(v);
 
+  const renderDetailsCard = () => (
+    <Card sx={{
+      borderRadius: 3,
+      boxShadow: 'var(--shadow)',
+      overflow: 'hidden',
+      border: '1px solid var(--border)'
+    }}>
+      <Box sx={{
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+        px: 2.5,
+        py: 1.5,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5
+      }}>
+        <AssignmentIcon sx={{ color: '#fff', fontSize: 20 }} />
+        <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
+          Details
+        </Typography>
+      </Box>
+      <CardContent sx={{ p: 2.5 }}>
+        <Stack spacing={2.5}>
+          {[
+            { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Requested By', value: getUserName(request.createdBy), avatar: getUserInitial(request.createdBy) },
+            { icon: <AssignmentIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned To', value: getUserName(request.assignedTo) || 'Unassigned', avatar: getUserInitial(request.assignedTo) },
+            { icon: <CheckCircleIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Status', value: getStatusLabel(request.status), chip: request.status },
+            { icon: <CalendarIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Due Date', value: request.requestedByDate ? dayjs(request.requestedByDate).format('MMM D, YYYY') : 'Not set', date: true }
+          ].map((item, idx) => (
+            <Box key={idx}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+                {item.icon}
+                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.7rem' }}>
+                  {item.label}
+                </Typography>
+              </Box>
+              {item.chip ? (
+                <Chip
+                  label={item.value}
+                  size="small"
+                  sx={{ ...getStatusChipStyle(item.chip), fontWeight: 700, fontSize: '0.75rem', borderRadius: 1.5, '& .MuiChip-label': { px: 1.5 } }}
+                />
+              ) : item.date && canChangeDueDate ? (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    value={request.requestedByDate ? dayjs(request.requestedByDate) : null}
+                    onChange={(newValue) => {
+                      if (newValue) dueDateMutation.mutate(newValue.format('YYYY-MM-DD'));
+                    }}
+                    slotProps={{
+                      textField: {
+                        size: 'small',
+                        sx: getDueDateSidebarSx(request.requestedByDate)
+                      }
+                    }}
+                  />
+                </LocalizationProvider>
+              ) : (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                  <Avatar sx={{ width: 26, height: 26, fontSize: '0.75rem', bgcolor: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                    {item.avatar}
+                  </Avatar>
+                  <Typography sx={{
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    ...(item.date ? {
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      ...getDueDateColorStyle(request.requestedByDate)
+                    } : { color: 'var(--text-h)' })
+                  }}>
+                    {item.value}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+
+  const renderAttachmentsCard = () => (
+    <Card sx={{
+      borderRadius: 3,
+      boxShadow: 'var(--shadow)',
+      overflow: 'hidden',
+      border: '1px solid var(--border)'
+    }}>
+      <Box sx={{
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+        px: 2.5,
+        py: 1.5,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5
+      }}>
+        <AttachFile sx={{ color: '#fff', fontSize: 20 }} />
+        <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
+          Attachments ({request.attachments.length})
+        </Typography>
+      </Box>
+      <CardContent sx={{ p: 2 }}>
+        <Stack spacing={1}>
+          {request.attachments.map((att: any) => (
+            <Box
+              key={att.id}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                p: 1.5,
+                border: "1px solid var(--border)",
+                borderRadius: 2,
+                transition: 'all 0.2s',
+                '&:hover': { borderColor: 'var(--accent)', bgcolor: 'var(--accent-bg)' }
+              }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  {att.fileName}
+                </Typography>
+                {att.createdAt && (
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                    {dayjs(att.createdAt).format('MMM D, YYYY')}
+                  </Typography>
+                )}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 0.5 }}>
+                <IconButton
+                  size="small"
+                  onClick={() => downloadAttachment(att.id, att.fileName)}
+                  sx={{ color: 'var(--accent)', '&:hover': { bgcolor: 'var(--accent-bg)' }, flexShrink: 0 }}
+                >
+                  <Download fontSize="small" />
+                </IconButton>
+                {canDeleteAttachment() && (
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteAttachmentMutation.mutate(att.id)}
+                    disabled={deleteAttachmentMutation.isPending}
+                    sx={{ color: 'var(--error)', '&:hover': { bgcolor: 'rgba(220,38,38,0.08)' }, flexShrink: 0 }}
+                  >
+                    <DeleteIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <DashboardLayout activeTab={tabIndex} onTabChange={handleTabChange} tabs={tabs}>
       <Box sx={{ maxWidth: 1300, mx: "auto", px: { xs: 0, sm: 1, md: 3 }, py: { xs: 1.5, md: 3 } }}>
@@ -452,8 +622,11 @@ const RequestDetailPage = () => {
             gap: 2
           }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', mb: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', mb: 1, textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
                 {request.subject}
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem', mb: 2, maxWidth: 900, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                {request.explanation || 'No description provided.'}
               </Typography>
               <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}>
                 <Chip
@@ -478,6 +651,28 @@ const RequestDetailPage = () => {
                   </LocalizationProvider>
                 ) : (
                   <DueDateBadge dueDate={request.requestedByDate} />
+                )}
+              </Stack>
+              <Stack direction="row" spacing={1} sx={{ mt: 2, display: { xs: 'flex', lg: 'none' } }}>
+                <Button 
+                  size="small" 
+                  variant="outlined" 
+                  startIcon={<AssignmentIcon sx={{ fontSize: 16 }} />}
+                  onClick={() => { setMobileDrawerMode('details'); setMobileDrawerOpen(true); }}
+                  sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)', textTransform: 'none', borderRadius: 2 }}
+                >
+                  Details
+                </Button>
+                {request.attachments?.length > 0 && (
+                  <Button 
+                    size="small" 
+                    variant="outlined"
+                    startIcon={<AttachFile sx={{ fontSize: 16 }} />} 
+                    onClick={() => { setMobileDrawerMode('attachments'); setMobileDrawerOpen(true); }}
+                    sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)', textTransform: 'none', borderRadius: 2 }}
+                  >
+                    Attachments ({request.attachments.length})
+                  </Button>
                 )}
               </Stack>
             </Box>
@@ -629,59 +824,6 @@ const RequestDetailPage = () => {
                   />
                 )}
               </Box>
-
-              {/* Subject and Description Container */}
-              <Box sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: 2.5,
-                p: 2,
-                backdropFilter: 'blur(5px)'
-              }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#fff', mb: 1, fontSize: '1rem', lineHeight: 1.3 }}>
-                  {request.subject}
-                </Typography>
-                <Typography sx={{
-                  fontSize: '0.85rem',
-                  color: 'rgba(255, 255, 255, 0.88)',
-                  lineHeight: 1.5,
-                  whiteSpace: 'pre-wrap',
-                  maxHeight: { xs: '80px', md: '150px' },
-                  overflowY: 'auto',
-                  pr: 1,
-                  '&::-webkit-scrollbar': { width: '4px' },
-                  '&::-webkit-scrollbar-track': { background: 'transparent' },
-                  '&::-webkit-scrollbar-thumb': { background: 'rgba(255, 255, 255, 0.25)', borderRadius: '4px' }
-                }}>
-                  {request.explanation || 'No description provided.'}
-                </Typography>
-
-                {request.attachments?.length > 0 && (
-                  <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {request.attachments.map((att: any) => (
-                      <Button
-                        key={att.id}
-                        size="small"
-                        variant="outlined"
-                        startIcon={<AttachFile sx={{ fontSize: 13 }} />}
-                        onClick={() => downloadAttachment(att.id, att.fileName)}
-                        sx={{
-                          borderRadius: 2,
-                          textTransform: 'none',
-                          fontSize: '0.7rem',
-                          py: 0.25,
-                          px: 1,
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                          color: '#fff',
-                          '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255, 255, 255, 0.1)' }
-                        }}
-                      >
-                        {att.fileName.length > 20 ? att.fileName.slice(0, 20) + '...' : att.fileName}
-                      </Button>
-                    ))}
-                  </Box>
-                )}
-              </Box>
             </Box>
 
             {/* Messages Area */}
@@ -694,10 +836,8 @@ const RequestDetailPage = () => {
                 py: 2.5,
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1.5,
-                bgcolor: '#ECE5DD',
-                backgroundImage: 'radial-gradient(circle, #c8c0b8 1px, transparent 1px)',
-                backgroundSize: '18px 18px'
+                gap: 2,
+                background: 'linear-gradient(to bottom, #f8fafc, #f1f5f9)',
               }}
             >
 
@@ -716,8 +856,10 @@ const RequestDetailPage = () => {
                           color: 'var(--text-muted)',
                           fontWeight: 600,
                           fontSize: '0.75rem',
-                          bgcolor: '#ECE5DD',
+                          bgcolor: 'rgba(241,245,249,0.9)',
                           px: 1.5,
+                          py: 0.5,
+                          borderRadius: 2,
                           position: 'relative',
                           zIndex: 1
                         }}
@@ -739,12 +881,12 @@ const RequestDetailPage = () => {
                       <Box
                         sx={{
                           position: 'relative',
-                          bgcolor: isSelf ? 'var(--accent)' : '#fff',
-                          color: isSelf ? '#fff' : 'inherit',
-                          borderRadius: isSelf ? '16px 0 16px 16px' : '0 16px 16px 16px',
+                          background: isSelf ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#fff',
+                          color: isSelf ? '#fff' : '#1e293b',
+                          borderRadius: isSelf ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
                           p: 2,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                          border: isSelf ? 'none' : '1px solid rgba(0,0,0,0.05)',
+                          boxShadow: isSelf ? '0 4px 12px rgba(37,99,235,0.2)' : '0 4px 12px rgba(0,0,0,0.04)',
+                          border: isSelf ? 'none' : '1px solid rgba(0,0,0,0.03)',
                           pr: '28px'
                         }}
                       >
@@ -911,171 +1053,10 @@ const RequestDetailPage = () => {
             </Box>
           </Card>
 
-          {/* RIGHT Sidebar */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Details Card */}
-            <Card sx={{
-              borderRadius: 3,
-              boxShadow: 'var(--shadow)',
-              overflow: 'hidden',
-              border: '1px solid var(--border)'
-            }}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                px: 2.5,
-                py: 1.5,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5
-              }}>
-                <AssignmentIcon sx={{ color: '#fff', fontSize: 20 }} />
-                <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
-                  Details
-                </Typography>
-              </Box>
-              <CardContent sx={{ p: 2.5 }}>
-                <Stack spacing={2.5}>
-                  {[
-                    { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Requested By', value: getUserName(request.createdBy), avatar: getUserInitial(request.createdBy) },
-                    { icon: <AssignmentIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned To', value: getUserName(request.assignedTo) || 'Unassigned', avatar: getUserInitial(request.assignedTo) },
-                    { icon: <CheckCircleIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Status', value: getStatusLabel(request.status), chip: request.status },
-                    { icon: <CalendarIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Due Date', value: request.requestedByDate ? dayjs(request.requestedByDate).format('MMM D, YYYY') : 'Not set', date: true }
-                  ].map((item, idx) => (
-                    <Box key={idx}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
-                        {item.icon}
-                        <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.7rem' }}>
-                          {item.label}
-                        </Typography>
-                      </Box>
-                      {item.chip ? (
-                        <Chip
-                          label={item.value}
-                          size="small"
-                          sx={{ ...getStatusChipStyle(item.chip), fontWeight: 700, fontSize: '0.75rem', borderRadius: 1.5, '& .MuiChip-label': { px: 1.5 } }}
-                        />
-                      ) : item.date && canChangeDueDate ? (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            value={request.requestedByDate ? dayjs(request.requestedByDate) : null}
-                            onChange={(newValue) => {
-                              if (newValue) dueDateMutation.mutate(newValue.format('YYYY-MM-DD'));
-                            }}
-                            slotProps={{
-                              textField: {
-                                size: 'small',
-                                sx: getDueDateSidebarSx(request.requestedByDate)
-                              }
-                            }}
-                          />
-                        </LocalizationProvider>
-                      ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                          <Avatar sx={{ width: 26, height: 26, fontSize: '0.75rem', bgcolor: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                            {item.avatar}
-                          </Avatar>
-                          <Typography sx={{
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
-                            ...(item.date ? {
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: 1,
-                              ...getDueDateColorStyle(request.requestedByDate)
-                            } : { color: 'var(--text-h)' })
-                          }}>
-                            {item.value}
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
-                  ))}
-                </Stack>
-              </CardContent>
-            </Card>
-
-            {/* Attachments Card */}
-            {request.attachments?.length > 0 && (
-              <Card sx={{
-                borderRadius: 3,
-                boxShadow: 'var(--shadow)',
-                overflow: 'hidden',
-                border: '1px solid var(--border)'
-              }}>
-                <Box sx={{
-                  background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                  px: 2.5,
-                  py: 1.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5
-                }}>
-                  <AttachFile sx={{ color: '#fff', fontSize: 20 }} />
-                  <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
-                    Attachments ({request.attachments.length})
-                  </Typography>
-                </Box>
-                <CardContent sx={{ p: 2 }}>
-                  <Stack spacing={1}>
-                    {request.attachments.map((att: any) => (
-                      <Box
-                        key={att.id}
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1.5,
-                          p: 1.5,
-                          border: "1px solid var(--border)",
-                          borderRadius: 2,
-                          transition: 'all 0.2s',
-                          '&:hover': { borderColor: 'var(--accent)', bgcolor: 'var(--accent-bg)' }
-                        }}
-                      >
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 500,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              fontSize: '0.8rem'
-                            }}
-                          >
-                            {att.fileName}
-                          </Typography>
-                          {att.createdAt && (
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                              {dayjs(att.createdAt).format('MMM D, YYYY')}
-                            </Typography>
-                          )}
-                        </Box>
-                        <Box sx={{ display: 'flex', gap: 0.5 }}>
-                          <IconButton
-                            size="small"
-                            onClick={() => downloadAttachment(att.id, att.fileName)}
-                            sx={{ color: 'var(--accent)', '&:hover': { bgcolor: 'var(--accent-bg)' }, flexShrink: 0 }}
-                          >
-                            <Download fontSize="small" />
-                          </IconButton>
-                          {canDeleteAttachment() && (
-                            <IconButton
-                              size="small"
-                              onClick={() => deleteAttachmentMutation.mutate(att.id)}
-                              disabled={deleteAttachmentMutation.isPending}
-                              sx={{ color: 'var(--error)', '&:hover': { bgcolor: 'rgba(220,38,38,0.08)' }, flexShrink: 0 }}
-                            >
-                              <DeleteIcon sx={{ fontSize: 18 }} />
-                            </IconButton>
-                          )}
-                        </Box>
-                      </Box>
-                    ))}
-                  </Stack>
-                </CardContent>
-              </Card>
-            )}
-
+          {/* RIGHT Sidebar (Desktop only) */}
+          <Box sx={{ display: { xs: 'none', lg: 'flex' }, flexDirection: 'column', gap: 3 }}>
+            {renderDetailsCard()}
+            {request.attachments?.length > 0 && renderAttachmentsCard()}
           </Box>
         </Box>
       </Box>
@@ -1137,6 +1118,31 @@ const RequestDetailPage = () => {
           </>
         )}
       </Menu>
+
+      {/* Mobile Drawer wrapper for details and attachments */}
+      <Drawer
+        anchor="bottom"
+        open={mobileDrawerOpen && isMobile}
+        onClose={() => setMobileDrawerOpen(false)}
+        sx={{
+          '& .MuiDrawer-paper': {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            pb: 4,
+            maxHeight: '85vh',
+            px: 2,
+            pt: 1,
+            bgcolor: 'var(--bg)'
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Box sx={{ width: 40, height: 4, bgcolor: 'var(--border)', borderRadius: 2 }} />
+        </Box>
+        <Box sx={{ overflowY: 'auto' }}>
+          {mobileDrawerMode === 'details' ? renderDetailsCard() : (request.attachments?.length > 0 && renderAttachmentsCard())}
+        </Box>
+      </Drawer>
     </DashboardLayout>
   );
 };

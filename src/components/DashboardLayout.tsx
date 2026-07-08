@@ -65,8 +65,9 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
         elevation={0}
         sx={{
           background: 'var(--header-gradient)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255,255,255,0.15)',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.15)',
           color: '#fff',
           top: 0,
           left: 0,
@@ -75,7 +76,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
         }}
       >
         <Toolbar sx={{ px: { xs: 2, md: 4 }, py: 1.25, flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexShrink: 0, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flex: { xs: 1, sm: '0 0 auto' }, minWidth: 0 }}>
             {hasTabs && isMobile && (
               <>
                 <IconButton edge="start" color="inherit" aria-label="menu" onClick={(e) => setMobileMenuAnchor(e.currentTarget)} sx={{ mr: 0 }}>
@@ -122,11 +123,11 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 36, height: 36, display: { xs: 'flex', sm: 'none' } }}>
               T
             </Avatar>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+            <Box sx={{ minWidth: 0, overflow: 'hidden' }}>
+              <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.2 }}>
                 WorkTrack
               </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.7, fontSize: '0.65rem', letterSpacing: '0.5px' }}>
+              <Typography variant="caption" noWrap sx={{ opacity: 0.7, fontSize: '0.65rem', letterSpacing: '0.5px', display: 'block' }}>
                 Task Management
               </Typography>
             </Box>
@@ -161,9 +162,11 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                         color: isActive ? '#0f172a' : 'rgba(255,255,255,0.82)',
                         bgcolor: isActive ? 'rgba(255,255,255,0.95)' : 'transparent',
                         boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.18)' : 'none',
+                        transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
                         '&:hover': {
                           bgcolor: isActive ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.12)',
-                          color: isActive ? '#0f172a' : '#fff'
+                          color: isActive ? '#0f172a' : '#fff',
+                          transform: 'translateY(-1px)'
                         }
                       }}
                     >
@@ -175,7 +178,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
             )}
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, width: 'auto', justifyContent: 'flex-end', ml: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, flexShrink: 0, width: 'auto', justifyContent: 'flex-end', ml: 'auto' }}>
             <Button
               variant="contained"
               startIcon={<AddIcon sx={{ fontSize: 18 }} />}
@@ -192,12 +195,13 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
                 background: 'rgba(255,255,255,0.95)',
                 color: 'var(--accent)',
                 whiteSpace: 'nowrap',
+                flexShrink: 0,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   background: '#fff',
-                  boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
-                  transform: 'translateY(-1px)'
+                  boxShadow: '0 8px 24px rgba(37,99,235,0.25)',
+                  transform: 'translateY(-2px)'
                 },
-                transition: 'all 0.15s',
                 display: 'inline-flex',
                 alignItems: 'center',
               }}
