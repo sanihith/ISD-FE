@@ -169,7 +169,6 @@ const MyDayTab = () => {
               <TableHead>
                 <TableRow sx={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)', '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 } }}>
                   <TableCell>Task</TableCell>
-                  <TableCell>Assigned To </TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
                   <TableCell align="right">Focus</TableCell>
@@ -179,12 +178,6 @@ const MyDayTab = () => {
                 {myDayTasks?.map((task: any) => (
                   <TableRow key={task.id} onClick={() => navigate(`/request/${task.id}`)} sx={{ cursor: 'pointer', transition: 'all 0.15s', '&:hover': { bgcolor: 'var(--accent-bg)' }, '&:last-child td': { border: 0 } }}>
                     <TableCell sx={{ py: 1.5 }}><Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.875rem' }}>{task.subject}</Typography></TableCell>
-                    <TableCell sx={{ py: 1.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>{getUserInitial(task.assignedTo)}</Avatar>
-                        <Typography variant="caption" sx={{ fontWeight: 600 }}>{getUserName(task.assignedTo) || 'Unknown'}</Typography>
-                      </Box>
-                    </TableCell>
                     <TableCell sx={{ py: 1.5 }}><Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : task.status === 'IN_PROGRESS' ? 'rgba(245,158,11,0.12)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : task.status === 'IN_PROGRESS' ? '#b45309' : 'var(--accent)', border: 'none' }} /></TableCell>
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={task.requestedByDate} /></TableCell>
                     <TableCell align="right" sx={{ py: 1.5 }}><Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleMyDayMutation.mutate(task.id); }} sx={{ color: '#f59e0b' }}><SunIcon sx={{ fontSize: 18 }} /></IconButton><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleImportantMutation.mutate(task.id); }} sx={{ color: task.isImportant ? '#ef4444' : 'text.disabled' }}>{task.isImportant ? <StarIcon sx={{ fontSize: 18 }} /> : <StarOutlineIcon sx={{ fontSize: 18 }} />}</IconButton></Box></TableCell>
