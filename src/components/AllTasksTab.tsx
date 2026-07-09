@@ -57,21 +57,23 @@ const AllTasksTab = () => {
     const merged = new Map<number, any>();
 
     requestedMap.forEach((task, id) => {
+      const assignedByUser = task.createdBy || task.assignedTo;
       merged.set(id, {
         ...task,
         _sources: todoMap.has(id) ? ['REQUESTED', 'TODO'] : ['REQUESTED'],
-        _personLabel: getUserName(task.assignedTo) || 'Unassigned',
-        _personInitial: getUserInitial(task.assignedTo)
+        _personLabel: getUserName(assignedByUser) || getUserName(task.assignedTo) || 'Unknown',
+        _personInitial: getUserInitial(assignedByUser) || getUserInitial(task.assignedTo)
       });
     });
 
     todoMap.forEach((task, id) => {
       if (!merged.has(id)) {
+        const assignedByUser = task.createdBy || task.assignedTo;
         merged.set(id, {
           ...task,
           _sources: ['TODO'],
-          _personLabel: getUserName(task.createdBy) || 'Unknown',
-          _personInitial: getUserInitial(task.createdBy)
+          _personLabel: getUserName(assignedByUser) || 'Unknown',
+          _personInitial: getUserInitial(assignedByUser)
         });
       }
     });
