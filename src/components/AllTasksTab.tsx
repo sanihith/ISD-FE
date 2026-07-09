@@ -57,23 +57,23 @@ const AllTasksTab = () => {
     const merged = new Map<number, any>();
 
     requestedMap.forEach((task, id) => {
-      const assignedByUser = task.createdBy || task.assignedTo;
+      const assignedToUser = task.assignedTo || task.createdBy;
       merged.set(id, {
         ...task,
         _sources: todoMap.has(id) ? ['REQUESTED', 'TODO'] : ['REQUESTED'],
-        _personLabel: getUserName(assignedByUser) || getUserName(task.assignedTo) || 'Unknown',
-        _personInitial: getUserInitial(assignedByUser) || getUserInitial(task.assignedTo)
+        _personLabel: getUserName(assignedToUser) || getUserName(task.createdBy) || 'Unknown',
+        _personInitial: getUserInitial(assignedToUser) || getUserInitial(task.createdBy)
       });
     });
 
     todoMap.forEach((task, id) => {
       if (!merged.has(id)) {
-        const assignedByUser = task.createdBy || task.assignedTo;
+        const assignedToUser = task.assignedTo || task.createdBy;
         merged.set(id, {
           ...task,
           _sources: ['TODO'],
-          _personLabel: getUserName(assignedByUser) || 'Unknown',
-          _personInitial: getUserInitial(assignedByUser)
+          _personLabel: getUserName(assignedToUser) || 'Unknown',
+          _personInitial: getUserInitial(assignedToUser)
         });
       }
     });
@@ -351,7 +351,7 @@ const AllTasksTab = () => {
               <TableHead>
                 <TableRow sx={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)', '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 } }}>
                   <TableCell>Task</TableCell>
-                  <TableCell>Assigned By </TableCell>
+                  <TableCell>Assigned To </TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
                   <TableCell align="right">Focus</TableCell>

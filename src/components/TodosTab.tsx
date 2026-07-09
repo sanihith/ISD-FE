@@ -299,12 +299,12 @@ const TodosTab = () => {
                     }}
                   />
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                    <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>
-                      {getUserInitial(todo.assignedTo) !== '?' ? getUserInitial(todo.assignedTo) : getUserInitial(todo.createdBy)}
-                    </Avatar>
-                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.7rem' }}>
-                      {getUserName(todo.assignedTo) || getUserName(todo.createdBy) || 'Unassigned'}
-                    </Typography>
+                      <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>
+                        {getUserInitial(todo.createdBy) !== '?' ? getUserInitial(todo.createdBy) : getUserInitial(todo.assignedTo)}
+                      </Avatar>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                        {getUserName(todo.createdBy) || getUserName(todo.assignedTo) || 'Unassigned'}
+                      </Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -321,7 +321,7 @@ const TodosTab = () => {
                   '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 }
                 }}>
                   <TableCell>Task</TableCell>
-                  <TableCell>Assigned to </TableCell>
+                  <TableCell>Assigned By </TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
                   <TableCell align="right">Focus</TableCell>
@@ -351,10 +351,10 @@ const TodosTab = () => {
                     <TableCell sx={{ py: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                         <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>
-                          {getUserInitial(todo.assignedTo) !== '?' ? getUserInitial(todo.assignedTo) : getUserInitial(todo.createdBy)}
+                          {getUserInitial(todo.createdBy) !== '?' ? getUserInitial(todo.createdBy) : getUserInitial(todo.assignedTo)}
                         </Avatar>
                         <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                          {getUserName(todo.assignedTo) || getUserName(todo.createdBy) || 'Unassigned'}
+                          {getUserName(todo.createdBy) || getUserName(todo.assignedTo) || 'Unassigned'}
                         </Typography>
                       </Box>
                     </TableCell>

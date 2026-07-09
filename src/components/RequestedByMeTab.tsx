@@ -240,14 +240,14 @@ const RequestedByMeTab = () => {
           <Box sx={{ overflowX: 'auto' }}>
             <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{
+                <TableRow sx={{
                 background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
                 '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 }
               }}>
                 <TableCell>Task</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Due Date</TableCell>
-                <TableCell>Assigned By </TableCell>
+                <TableCell>Assigned To </TableCell>
                 <TableCell align="right">Focus</TableCell>
               </TableRow>
             </TableHead>
@@ -292,10 +292,10 @@ const RequestedByMeTab = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>
-                        {getUserInitial(req.createdBy)}
-                      </Avatar>
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {getUserName(req.createdBy) || 'Unknown'}
+                          {getUserInitial(req.assignedTo)}
+                        </Avatar>
+                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                        {getUserName(req.assignedTo) || 'Unassigned'}
                       </Typography>
                     </Box>
                   </TableCell>
