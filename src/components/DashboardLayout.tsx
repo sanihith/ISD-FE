@@ -127,11 +127,8 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
               component="img"
               src={logo}
               alt="Logo"
-              sx={{ height: 44, width: 'auto', display: { xs: 'none', sm: 'block' }, borderRadius: 2 }}
+              sx={{ height: { xs: 36, sm: 44 }, width: 'auto', borderRadius: 2 }}
             />
-            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 36, height: 36, display: { xs: 'flex', sm: 'none' } }}>
-              T
-            </Avatar>
             <Box sx={{ minWidth: 0, overflow: 'hidden' }}>
               <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.2 }}>
                 ISD
