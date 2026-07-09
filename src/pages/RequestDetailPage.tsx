@@ -427,7 +427,7 @@ const RequestDetailPage = () => {
       <CardContent sx={{ p: 2.5 }}>
         <Stack spacing={2.5}>
           {[
-            { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Requested By', value: getUserName(request.createdBy), avatar: getUserInitial(request.createdBy) },
+            { icon: <PersonIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned By', value: getUserName(request.createdBy), avatar: getUserInitial(request.createdBy) },
             { icon: <AssignmentIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Assigned To', value: getUserName(request.assignedTo) || 'Unassigned', avatar: getUserInitial(request.assignedTo) },
             { icon: <CheckCircleIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Status', value: getStatusLabel(request.status), chip: request.status },
             { icon: <CalendarIcon sx={{ fontSize: 16, color: 'var(--accent)' }} />, label: 'Due Date', value: request.requestedByDate ? dayjs(request.requestedByDate).format('MMM D, YYYY') : 'Not set', date: true }
