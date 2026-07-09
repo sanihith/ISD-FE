@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   Box,
   IconButton,
@@ -36,4 +37,4 @@ const NotificationCenter = () => {
   );
 };
 
-export default NotificationCenter;
+export default memo(NotificationCenter);

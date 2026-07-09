@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import type { ReactNode, SyntheticEvent } from 'react';
 import {
   AppBar,
@@ -278,4 +278,4 @@ const DashboardLayout = ({ children, activeTab, onTabChange, tabs }: DashboardLa
   );
 };
 
-export default DashboardLayout;
+export default memo(DashboardLayout);

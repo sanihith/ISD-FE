@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from 'react';
+import { useState, useEffect, memo, type ChangeEvent } from 'react';
 import {
   Dialog, DialogContent, Box, Typography, TextField, Button,
   IconButton, Tooltip, Chip, MenuItem, Select, FormControl,
@@ -437,4 +437,4 @@ const NewRequestPopup = ({ open, onClose, initialAssignedToEmail }: NewRequestPo
   );
 };
 
-export default NewRequestPopup;
+export default memo(NewRequestPopup);

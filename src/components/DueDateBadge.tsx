@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Chip } from '@mui/material';
 import { getDueDateColorStyle } from '../utils/dateUtils';
 
@@ -15,4 +16,4 @@ const DueDateBadge = ({ dueDate }: DueDateBadgeProps) => {
   );
 };
 
-export default DueDateBadge;
+export default memo(DueDateBadge);

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
@@ -40,4 +40,4 @@ const AuthCallbackPage = () => {
   );
 };
 
-export default AuthCallbackPage;
+export default memo(AuthCallbackPage);

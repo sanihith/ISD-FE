@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Box } from '@mui/material';
 import DashboardLayout from '../components/DashboardLayout';
 import ReporteesTab from '../components/ReporteesTab';
@@ -12,4 +13,4 @@ const ReporteesPage = () => {
   );
 };
 
-export default ReporteesPage;
+export default memo(ReporteesPage);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import {
   Box
 } from '@mui/material';
@@ -14,16 +14,16 @@ import ReporteesTab from '../components/ReporteesTab';
 const DashboardPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { label: 'Todos', component: <TodosTab /> },
     { label: 'Tasks Assigned', component: <RequestedByMeTab /> },
     { label: 'All Tasks', component: <AllTasksTab /> },
     { label: 'My Day', component: <MyDayTab /> },
     { label: 'Important', component: <ImportantTab /> },
     { label: 'Reportees', component: <ReporteesTab /> },
-  ];
+  ], []);
 
-  const handleTabChange = (_: React.SyntheticEvent, v: number) => setTabIndex(v);
+  const handleTabChange = useCallback((_: React.SyntheticEvent, v: number) => setTabIndex(v), []);
 
   return (
     <DashboardLayout activeTab={tabIndex} onTabChange={handleTabChange} tabs={tabs}>
@@ -34,4 +34,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default memo(DashboardPage);

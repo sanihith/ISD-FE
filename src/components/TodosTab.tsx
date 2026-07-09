@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Typography, Box, Chip, Avatar, IconButton, Tooltip, Select, MenuItem } from '@mui/material';
@@ -407,4 +407,4 @@ const TodosTab = () => {
   };
 
 
-export default TodosTab;
+export default memo(TodosTab);

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Typography, Box, Chip, Avatar, IconButton, Tooltip } from '@mui/material';
@@ -334,4 +334,4 @@ const RequestedByMeTab = () => {
   );
 };
 
-export default RequestedByMeTab;
+export default memo(RequestedByMeTab);

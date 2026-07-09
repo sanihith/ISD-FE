@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -381,4 +381,4 @@ const AllTasksTab = () => {
   );
 };
 
-export default AllTasksTab;
+export default memo(AllTasksTab);

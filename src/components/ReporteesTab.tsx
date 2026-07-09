@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { 
   Typography, 
   Box, 
@@ -30,7 +30,7 @@ import { useAuth } from '../context/AuthContext';
 import { getStatusLabel } from '../utils/statusUtils';
 import { getUserInitial, getUserName } from '../utils/userUtils';
 
-const PerformanceView = ({ userId }: { userId: number }) => {
+const PerformanceView = memo(({ userId }: { userId: number }) => {
   const queryClient = useQueryClient();
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['reporteeTasks', userId],
@@ -180,7 +180,7 @@ const PerformanceView = ({ userId }: { userId: number }) => {
       </Stack>
     </Box>
   );
-};
+});
 
 const ReporteesTab = () => {
   const { user } = useAuth();
@@ -286,4 +286,4 @@ const ReporteesTab = () => {
   );
 };
 
-export default ReporteesTab;
+export default memo(ReporteesTab);

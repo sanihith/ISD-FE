@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -105,7 +105,7 @@ const RequestDetailPage = () => {
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const prevCommentCountRef = useRef<number>(0);
 
-  const canDeleteComment = (msg: any) => {
+  const canDeleteComment = useCallback((msg: any) => {
     if (msg.type === 'SYSTEM') return false;
     if (!user || !request) return false;
     if (isManager) return true;
@@ -113,24 +113,24 @@ const RequestDetailPage = () => {
     const isParticipant = request.createdBy?.id === user.id || request.assignedTo?.id === user.id;
     if (isParticipant) return true;
     return msg.createdBy?.id === user.id;
-  };
+  }, [user, request, isManager]);
 
-  const canDeleteAttachment = () => {
+  const canDeleteAttachment = useCallback(() => {
     if (!user || !request) return false;
     if (isManager) return true;
     return request.createdBy?.id === user.id || request.assignedTo?.id === user.id;
-  };
+  }, [user, request, isManager]);
 
-  const openMessageMenu = (event: React.MouseEvent<HTMLElement>, msg: any) => {
+  const openMessageMenu = useCallback((event: React.MouseEvent<HTMLElement>, msg: any) => {
     event.stopPropagation();
     setMenuAnchor(event.currentTarget);
     setMenuMessage(msg);
-  };
+  }, []);
 
-  const closeMessageMenu = () => {
+  const closeMessageMenu = useCallback(() => {
     setMenuAnchor(null);
     setMenuMessage(null);
-  };
+  }, []);
 
   useEffect(() => {
     const currentCount = displayComments.length;
@@ -288,7 +288,7 @@ const RequestDetailPage = () => {
     }
   });
 
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = useCallback(async (newStatus: string) => {
     setSelectedStatus(newStatus);
     try {
       await updateMutation.mutateAsync(newStatus);
@@ -296,9 +296,9 @@ const RequestDetailPage = () => {
     } catch (err) {
       setSelectedStatus('');
     }
-  };
+  }, [updateMutation]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!commentText.trim() && !selectedFile) return;
     const content = commentText.trim() || (selectedFile ? `Shared an attachment: ${selectedFile.name}` : "");
     const currentFile = selectedFile;
@@ -330,14 +330,14 @@ const RequestDetailPage = () => {
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [commentText, selectedFile, replyingTo, commentMutation, id, queryClient]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setSelectedFile(file);
-  };
+  }, []);
 
-  const downloadAttachment = (attachmentId: number, fileName: string) => {
+  const downloadAttachment = useCallback((attachmentId: number, fileName: string) => {
     apiClient.get(`/attachments/${attachmentId}`, { responseType: 'blob' }).then(res => {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement('a');
@@ -346,7 +346,7 @@ const RequestDetailPage = () => {
       a.click();
       window.URL.revokeObjectURL(url);
     });
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -1150,4 +1150,4 @@ const RequestDetailPage = () => {
   );
 };
 
-export default RequestDetailPage;
+export default memo(RequestDetailPage);

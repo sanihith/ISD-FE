@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   Button,
   Container,
@@ -129,4 +130,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default memo(LoginPage);

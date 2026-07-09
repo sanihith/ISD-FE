@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import {
   Box,
   Typography,
@@ -258,4 +258,4 @@ const NotificationsPage = () => {
   );
 };
 
-export default NotificationsPage;
+export default memo(NotificationsPage);
