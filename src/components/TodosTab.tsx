@@ -321,6 +321,7 @@ const TodosTab = () => {
                   '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 }
                 }}>
                   <TableCell>Task</TableCell>
+                  <TableCell>Assigned to </TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
                   <TableCell align="right">Focus</TableCell>
@@ -346,6 +347,16 @@ const TodosTab = () => {
                   >
                     <TableCell sx={{ py: 1.5 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.875rem' }}>{todo.subject}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'var(--accent)' }}>
+                          {getUserInitial(todo.assignedTo) !== '?' ? getUserInitial(todo.assignedTo) : getUserInitial(todo.createdBy)}
+                        </Avatar>
+                        <Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                          {getUserName(todo.assignedTo) || getUserName(todo.createdBy) || 'Unassigned'}
+                        </Typography>
+                      </Box>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Chip

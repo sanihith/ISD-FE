@@ -247,7 +247,7 @@ const RequestedByMeTab = () => {
                 <TableCell>Task</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Due Date</TableCell>
-                <TableCell>Reportee</TableCell>
+                <TableCell>Assigned By </TableCell>
                 <TableCell align="right">Focus</TableCell>
               </TableRow>
             </TableHead>
@@ -292,10 +292,10 @@ const RequestedByMeTab = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>
-                        {getUserInitial(req.assignedTo)}
+                        {getUserInitial(req.createdBy)}
                       </Avatar>
                       <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {getUserName(req.assignedTo) || 'Unassigned'}
+                        {getUserName(req.createdBy) || 'Unknown'}
                       </Typography>
                     </Box>
                   </TableCell>

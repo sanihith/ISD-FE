@@ -349,6 +349,7 @@ const AllTasksTab = () => {
               <TableHead>
                 <TableRow sx={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)', '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 } }}>
                   <TableCell>Task</TableCell>
+                  <TableCell>Assigned By </TableCell>
                   <TableCell>Source</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
@@ -359,6 +360,12 @@ const AllTasksTab = () => {
                 {filteredTasks.map((task: any) => (
                   <TableRow key={task.id} onClick={() => navigate(`/request/${task.id}`)} sx={{ cursor: 'pointer', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', borderLeft: '3px solid transparent', '&:hover': { bgcolor: 'rgba(37, 99, 235, 0.04)', borderLeftColor: 'var(--accent)', transform: 'scale(1.002)', boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)' }, '&:last-child td': { border: 0 } }}>
                     <TableCell sx={{ py: 1.5 }}><Typography variant="body2" sx={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.875rem' }}>{task.subject}</Typography></TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>{task._personInitial}</Avatar>
+                        <Typography variant="caption" sx={{ fontWeight: 600 }}>{task._personLabel}</Typography>
+                      </Box>
+                    </TableCell>
                     <TableCell sx={{ py: 1.5 }}>{getSourceChip(task._sources)}</TableCell>
                     <TableCell sx={{ py: 1.5 }}><Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : 'var(--text-h)', border: 'none' }} /></TableCell>
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={task.requestedByDate} /></TableCell>

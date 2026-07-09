@@ -1,9 +1,9 @@
-import { 
-  Button, 
-  Container, 
-  Box, 
-  Typography, 
-  Stack, 
+import {
+  Button,
+  Container,
+  Box,
+  Typography,
+  Stack,
   Divider,
   Fade,
   Paper,
@@ -62,7 +62,7 @@ const LoginPage = () => {
             />
 
             <Typography variant="h4" sx={{ fontWeight: 800, color: 'var(--text-h)', fontSize: { xs: '1.8rem', sm: '2.125rem' } }} gutterBottom>
-              WorkTrack
+              ISD
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: { xs: 4, sm: 6 }, px: { xs: 1, sm: 0 } }}>
               The modern standard for task management.
@@ -121,7 +121,7 @@ const LoginPage = () => {
           </Paper>
 
           <Typography variant="caption" sx={{ mt: 4, display: 'block', color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
-            © 2026 WorkTrack Inc. Built for performance.
+            © 2026 ISD Inc. Built for performance.
           </Typography>
         </Container>
       </Fade>
