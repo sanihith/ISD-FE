@@ -352,7 +352,6 @@ const AllTasksTab = () => {
                 <TableRow sx={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)', '& th': { color: '#fff', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', py: 1.5 } }}>
                   <TableCell>Task</TableCell>
                   <TableCell>Assigned By </TableCell>
-                  <TableCell>Source</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Due Date</TableCell>
                   <TableCell align="right">Focus</TableCell>
@@ -368,7 +367,6 @@ const AllTasksTab = () => {
                         <Typography variant="caption" sx={{ fontWeight: 600 }}>{task._personLabel}</Typography>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ py: 1.5 }}>{getSourceChip(task._sources)}</TableCell>
                     <TableCell sx={{ py: 1.5 }}><Chip label={getStatusLabel(task.status)} size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: 1.5, bgcolor: task.status === 'COMPLETED' ? 'var(--success)' : task.status === 'REJECTED' ? 'var(--error)' : 'var(--accent-bg)', color: task.status === 'COMPLETED' || task.status === 'REJECTED' ? '#fff' : 'var(--text-h)', border: 'none' }} /></TableCell>
                     <TableCell sx={{ py: 1.5 }}><DueDateBadge dueDate={task.requestedByDate} /></TableCell>
                     <TableCell align="right" sx={{ py: 1.5 }}><Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleMyDayMutation.mutate(task.id); }} sx={{ color: task.isMyDay ? 'var(--warning)' : 'text.disabled' }}>{task.isMyDay ? <SunIcon sx={{ fontSize: 18 }} /> : <SunOutlinedIcon sx={{ fontSize: 18 }} />}</IconButton><IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleImportantMutation.mutate(task.id); }} sx={{ color: task.isImportant ? 'var(--warning)' : 'text.disabled' }}>{task.isImportant ? <StarIcon sx={{ fontSize: 18 }} /> : <StarOutlineIcon sx={{ fontSize: 18 }} />}</IconButton></Box></TableCell>
