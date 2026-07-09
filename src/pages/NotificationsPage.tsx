@@ -31,14 +31,14 @@ const NotificationsPage = () => {
   const { data: notifications = [], isLoading, error } = useQuery({
     queryKey: ['notifications', user?.id],
     queryFn: () => apiClient.get('/notifications').then(res => res.data),
-    refetchInterval: 5000,
+    refetchInterval: 30000, // 30 seconds
     enabled: !!user,
   });
 
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ['unread-count', user?.id],
     queryFn: () => apiClient.get('/notifications/unread-count').then(res => res.data),
-    refetchInterval: 5000,
+    refetchInterval: 30000, // 30 seconds
     enabled: !!user,
   });
 

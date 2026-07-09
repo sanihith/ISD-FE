@@ -8,8 +8,10 @@ import App from './App.tsx'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 10 * 1000, 
+      staleTime: 5 * 60 * 1000,  // 5 minutes — avoids refetching on every nav/tab switch
+      gcTime: 10 * 60 * 1000,    // Keep unused data in cache for 10 minutes
       refetchOnWindowFocus: false,
+      retry: 1,                  // Only retry failed requests once instead of 3 times
     },
   },
 })

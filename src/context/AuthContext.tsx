@@ -143,19 +143,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = '/login';
   }, [setToken, queryClient]);
 
-  useEffect(() => {
-    initTeams().then(inTeams => {
-      if (inTeams) {
-        getTeamsUser().then(user => {
-          if (user?.email && token) {
-            apiClient.get('/auth/me').catch(() => {
-              window.location.href = getLoginUrl();
-            });
-          }
-        });
-      }
-    });
-  }, [token]);
 
   const normalizedRole = (user?.role || '').toUpperCase();
   const isManager = ['MANAGER', 'DIRECTOR', 'ADMIN', 'ROLE_MANAGER', 'ROLE_DIRECTOR', 'ROLE_ADMIN'].includes(normalizedRole);

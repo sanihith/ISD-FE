@@ -62,7 +62,7 @@ const RequestDetailPage = () => {
     queryKey: ['request', id],
     queryFn: () => apiClient.get(`/requests/${id}`).then(res => res.data),
     enabled: !!id,
-    refetchInterval: 5000,
+    refetchInterval: 15000, // 15 seconds — mutations handle instant updates
     refetchOnMount: 'always'
   });
 
