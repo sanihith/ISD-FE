@@ -38,9 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return null;
   });
 
-  // If there's no token AND no cached user, we know immediately we're not authenticated.
-  // Avoid any network call and set loading = false right away → login page paints instantly.
-  const hasToken = !!localStorage.getItem('jwt_token');
+  const hasToken = !!token;
   const [isLoading, setIsLoading] = useState<boolean>(hasToken);
 
   const setToken = useCallback((value: string | null) => {
@@ -50,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else {
       localStorage.removeItem('jwt_token');
       localStorage.removeItem(USER_CACHE_KEY);
+      setIsLoading(false);
     }
     setTokenState(value);
   }, []);

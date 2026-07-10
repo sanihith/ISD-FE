@@ -1016,7 +1016,7 @@ const RequestDetailPage = () => {
               <TextField
                 fullWidth
                 size="small"
-                placeholder="Type a message..."
+                placeholder="Type a message... (use @name to include someone in the conversation)"
                 multiline
                 maxRows={4}
                 value={commentText}
